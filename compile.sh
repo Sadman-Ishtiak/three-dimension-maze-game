@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-g++ main.cpp ../map.cpp -o main \
+g++ main.cpp -o main \
     -I.. \
     -std=c++20 \
     -g -O3 \

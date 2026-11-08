@@ -219,6 +219,7 @@ int32_t main() {
             if (MAP[z][x] == 'S') { start_x = x; start_z = z; }
             if (MAP[z][x] == 'E') { exit_x  = x; exit_z  = z; }
         }
+    cout << exit_x << " " << exit_z << endl;
     vec3 pos(start_x + 0.5, EYE_HEIGHT, start_z + 0.5);  // cell center: no gridline ambiguity
     double yaw = 0.0;                                    // facing +x
 
