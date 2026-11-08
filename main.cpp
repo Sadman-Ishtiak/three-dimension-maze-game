@@ -106,7 +106,7 @@ int32_t main() {
         SDL_WINDOW_SHOWN             // Flags (makes it visible)
     );
 
-    SDL_Renderer renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) renderer = SDL_CreateRenderer(window, -1, 0);
 
 
