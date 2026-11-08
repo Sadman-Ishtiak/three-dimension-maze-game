@@ -70,7 +70,11 @@ inline double dot(const vec3 a, const vec3 b) {
     return a.x()*b.x() + a.y()*b.y() + a.z()*b.z();
 }
 inline vec3 cross(const vec3 a, const vec3 b) {
-    return vec3();
+    return vec3(
+        a.y()*b.z() - a.z()*b.y(),
+        a.y()*b.z() - a.z()*b.y(),
+        a.y()*b.z() - a.z()*b.y()
+    );
 }
 
 
