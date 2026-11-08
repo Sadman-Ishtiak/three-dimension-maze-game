@@ -41,6 +41,8 @@ const int       SCREEN_HEIGHT   = 480;
 // Everything below reads with that meaning: floor plane z = 0, eye at z = EYE_HEIGHT.
 const double    EYE_HEIGHT      = 0.5;   // camera height: middle of a 1-unit wall
 const double    FOV_DEG         = 75.0;
+const double    MOVE_SPD        = 2.0;   // units per second (ground speed)
+const double    TURN_SPD        = 2.5;   // radians per second (turning speed)
 
 class vec3 {
     public:
@@ -171,7 +173,31 @@ void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
     }
 }
 
+// advance the player state by one frame's worth of input
+// mutates only pos.x/y and yaw; z (altitude) is constant in this game
+void update(vec3& pos, double& yaw, double dt, const Uint8* keys) {
+    // turning: left/right votes -> continuous intent * TURN_SPD * dt
+    yaw += ((keys[SDL_SCANCODE_RIGHT] ? 1.0 : 0.0) -
+            (keys[SDL_SCANCODE_LEFT]  ? 1.0 : 0.0)) * TURN_SPD * dt;
 
+    // frame basis, computed fresh here (never shared with render())
+    vec3 forward = vec3(cos(yaw), sin(yaw), 0.0);   // flat in ground x/y
+    vec3 right   = cross(forward, vec3(0, 0, 1));   // UP is +z (z-up convention)
+
+    // intent: two votes (walk, strafe)
+    double fwd  = (keys[SDL_SCANCODE_W] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_S] ? 1.0 : 0.0);
+    double side = (keys[SDL_SCANCODE_D] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_A] ? 1.0 : 0.0);
+
+    vec3 step = (forward * fwd + right * side) * (MOVE_SPD * dt);
+
+    // commit, per-axis. Once walls exist, each line becomes:
+    //   if (!collides(candidate)) pos.axis += delta;   // slide along walls
+    pos[0] += step.x();   // via the & operator[]: x() returns a value copy
+    pos[1] += step.y();   // and cannot be written through
+
+    // win check, armed later once E is visibly in the world:
+    // if ((int)floor(pos.x()) == exit_x && (int)floor(pos.y()) == exit_y) ...
+}
 
 
 int32_t main() {
@@ -233,6 +259,7 @@ int32_t main() {
     SDL_Event event;
     bool quit = false;
     double start_time = SDL_GetTicks();
+    Uint32 last = SDL_GetTicks();   // frame clock: for dt
 
     // Keep the window open until the user closes it
     while (!quit) {
@@ -243,6 +270,13 @@ int32_t main() {
                 quit = true;
             }
         }
+
+        // --- advance the world: frame clock, then state update ---
+        Uint32 now_frame = SDL_GetTicks();
+        double dt = (now_frame - last) / 1000.0;
+        last = now_frame;
+        if (dt > 0.05) dt = 0.05;   // clamp: a frozen frame can't teleport the player
+        update(pos, yaw, dt, SDL_GetKeyboardState(NULL));
 
         // --- Render this frame ---
         render(buffer, vec3(pos.x(), pos.y(), EYE_HEIGHT), yaw);
