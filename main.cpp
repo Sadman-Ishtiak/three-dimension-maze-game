@@ -36,6 +36,9 @@ const char* MAP[MAZE_H] = {
 // Global variables and constant definition area
 const int       SCREEN_WIDTH    = 640;
 const int       SCREEN_HEIGHT   = 480;
+// World convention (declared once, per the ceiling rule): paper axes x/y =
+// ground plane ("xy" = the map you'd draw on paper); z = height/gravity.
+// Everything below reads with that meaning: floor plane z = 0, eye at z = EYE_HEIGHT.
 const double    EYE_HEIGHT      = 0.5;   // camera height: middle of a 1-unit wall
 const double    FOV_DEG         = 75.0;
 
@@ -121,12 +124,13 @@ class hit_record {
         vec3 hit_point, normal, material_color;
 };
 
-// Floor material color based on checkerboard pattern
+// Floor material: checkerboard over the GROUND plane (x, y). Pattern keys off
+// the two in-plane coordinates; z is altitude here and never varies on the floor.
 vec3 floor_color_at(const vec3& point) {
     int grid_x = (int)floor(point.x());
-    int grid_z = (int)floor(point.z());
+    int grid_y = (int)floor(point.y());
 
-    bool is_light_tile = ((grid_x + grid_z) % 2) == 0;
+    bool is_light_tile = ((grid_x + grid_y) % 2) == 0;
 
     if (is_light_tile) {
         return vec3(0.60, 0.58, 0.55);  // light gray
@@ -140,18 +144,20 @@ void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
     // camera basis -- once per FRAME, not per-pixel
     double half_w = tan(FOV_DEG * PI / 360.0);
     double half_h = half_w * SCREEN_HEIGHT / SCREEN_WIDTH;   // aspect-corrected
-    vec3 forward = vec3(cos(yaw), 0.0, sin(yaw));
-    vec3 right   = cross(forward, vec3(0, 1, 0));            // F x UP = right-hand rule
+    vec3 forward = vec3(cos(yaw), sin(yaw), 0.0);   // forward: flat along ground plane
+    vec3 right   = cross(forward, vec3(0, 0, 1));  // F x UP(z) = right-hand rule
+    // NOTE: c.y() below is the GREEN channel of a color -- harmless shadowing of
+    // the altitude axis; the two live in different structs.
 
     for (int j = 0; j < SCREEN_HEIGHT; j++) {
         double v = (1.0 - 2.0*(j + 0.5)/SCREEN_HEIGHT) * half_h;
         for (int i = 0; i < SCREEN_WIDTH; i++) {
             double u = (2.0*(i + 0.5)/SCREEN_WIDTH - 1.0) * half_w;
-            ray r(eye, unit_vector(forward + u*right + v*vec3(0, 1, 0)));
+            ray r(eye, unit_vector(forward + u*right + v*vec3(0, 0, 1)));
 
             vec3 c;
-            if (r.direction.y() < -1e-9) {              // aims DOWN -> floor y=0
-                double t = -eye.y() / r.direction.y();  // solve eye.y + dir.y*t = 0
+            if (r.direction.z() < -1e-9) {              // aims DOWN -> floor plane z = 0
+                double t = -eye.z() / r.direction.z();  // solve eye.z + dir.z*t = 0
                 if (t > 1e-6) c = floor_color_at(r.at(t));
                 else c = vec3(0.22, 0.22, 0.26);
             } else {
@@ -220,7 +226,7 @@ int32_t main() {
             if (MAP[z][x] == 'E') { exit_x  = x; exit_z  = z; }
         }
     cout << exit_x << " " << exit_z << endl;
-    vec3 pos(start_x + 0.5, EYE_HEIGHT, start_z + 0.5);  // cell center: no gridline ambiguity
+    vec3 pos(start_x + 0.5, start_z + 0.5, EYE_HEIGHT);  // cell center horizontally, eye mid-height
     double yaw = 0.0;                                    // facing +x
 
     // 3. Main event loop setup
@@ -239,7 +245,7 @@ int32_t main() {
         }
 
         // --- Render this frame ---
-        render(buffer, vec3(pos.x(), EYE_HEIGHT, pos.z()), yaw);
+        render(buffer, vec3(pos.x(), pos.y(), EYE_HEIGHT), yaw);
 
         // --- Present: buffer -> texture -> composed frame -> visible ---
         SDL_UpdateTexture(texture, NULL, buffer.data(), pitch); // CPU pixels -> GPU texture
