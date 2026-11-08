@@ -212,6 +212,16 @@ int32_t main() {
         return 1;
     }
 
+    // --- Player state: find maze markers, spawn mid-cell ---
+    int start_x = 1, start_z = 1, exit_x = -1, exit_z = -1;
+    for (int z = 0; z < MAZE_H; z++)
+        for (int x = 0; x < MAZE_W; x++) {
+            if (MAP[z][x] == 'S') { start_x = x; start_z = z; }
+            if (MAP[z][x] == 'E') { exit_x  = x; exit_z  = z; }
+        }
+    vec3 pos(start_x + 0.5, EYE_HEIGHT, start_z + 0.5);  // cell center: no gridline ambiguity
+    double yaw = 0.0;                                    // facing +x
+
     // 3. Main event loop setup
     SDL_Event event;
     bool quit = false;
@@ -221,18 +231,27 @@ int32_t main() {
     while (!quit) {
         // Poll for pending events (clicks, keypresses, window close)
         while (SDL_PollEvent(&event) != 0) {
-            render(buffer, vec3(pos.x(), EYE_HEIGHT, pos.z()), yaw);
             // User requests quit (e.g., clicking the 'X' button)
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
         }
+
+        // --- Render this frame ---
+        render(buffer, vec3(pos.x(), EYE_HEIGHT, pos.z()), yaw);
+
+        // --- Present: buffer -> texture -> composed frame -> visible ---
+        SDL_UpdateTexture(texture, NULL, buffer.data(), pitch); // CPU pixels -> GPU texture
+        SDL_RenderCopy(renderer, texture, NULL, NULL);          // queue full-frame blit
+        SDL_RenderPresent(renderer);                            // swap onto the screen
     }
 
     double end_time = SDL_GetTicks();
     cout << "Total time spent = " << (end_time - start_time)/1000 << " seconds\n";
 
     // 4. Clean up and free resources
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
