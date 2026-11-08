@@ -12,8 +12,10 @@ using namespace std;
 
 
 // Global variables and constant definition area
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int       SCREEN_WIDTH    = 640;
+const int       SCREEN_HEIGHT   = 480;
+const double    EYE_HEIGHT      = 0.5;   // camera height: middle of a 1-unit wall
+
 
 class vec3 {
     public:
@@ -84,12 +86,32 @@ inline vec3 unit_vector(vec3 a) {
     return a/a.length();
 }
 
-struct ray {
-    vec3 orig, dir;
-    ray(vec3 o, vec3 d) : orig(o), dir(d) {}
-    vec3 at(double t) const { return orig + dir*t; }
+class ray {
+    public:     // default for struct
+        vec3 orig, dir;
+        ray(vec3 o, vec3 d) : orig(o), dir(d) {}
+        vec3 at(double t) const { return orig + dir*t; }
 };
 
+class hit_record {
+    public:
+        double t = 1e30;
+        vec3 p, n, albedo;
+};
+
+// Floor material color based on checkerboard pattern
+vec3 floor_color_at(const vec3& point) {
+    int grid_x = (int)floor(point.x());
+    int grid_z = (int)floor(point.z());
+
+    bool is_light_tile = ((grid_x + grid_z) % 2) == 0;
+
+    if (is_light_tile) {
+        return vec3(0.60, 0.58, 0.55);  // light gray
+    } else {
+        return vec3(0.30, 0.30, 0.33);  // dark gray
+    }
+}
 
 
 
