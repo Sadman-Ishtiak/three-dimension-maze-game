@@ -15,7 +15,7 @@ using namespace std;
 const int       SCREEN_WIDTH    = 640;
 const int       SCREEN_HEIGHT   = 480;
 const double    EYE_HEIGHT      = 0.5;   // camera height: middle of a 1-unit wall
-
+const double    FOV_DEG         = 75.0;
 
 class vec3 {
     public:
@@ -88,15 +88,15 @@ inline vec3 unit_vector(vec3 a) {
 
 class ray {
     public:     // default for struct
-        vec3 orig, dir;
-        ray(vec3 o, vec3 d) : orig(o), dir(d) {}
-        vec3 at(double t) const { return orig + dir*t; }
+        vec3 origin, direction;
+        ray(vec3 o, vec3 d) : origin(o), direction(d) {}
+        vec3 at(double t) const { return origin + direction*t; }
 };
 
 class hit_record {
     public:
-        double t = 1e30;
-        vec3 p, n, albedo;
+        double ray_t = 1e30;
+        vec3 hit_point, normal, material_color;
 };
 
 // Floor material color based on checkerboard pattern
