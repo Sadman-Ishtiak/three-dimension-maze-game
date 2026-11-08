@@ -1,12 +1,16 @@
 #include <SDL2/SDL.h>
 #include<bits/stdc++.h>
+#define PI 3.14159265358979323846
 using namespace std;
 
+
+// Global variables and constant definition area
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 
 int32_t main() {
+    // 1. Checking everything before running the code
     cout << "Hello World" << endl;
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -15,7 +19,7 @@ int32_t main() {
 
     // 2. Create the window
     SDL_Window* window = SDL_CreateWindow(
-        "SDL Basic Window",          // Window title
+        "Maze Runner 3D",          // Window title
         SDL_WINDOWPOS_CENTERED,      // Initial x position
         SDL_WINDOWPOS_CENTERED,      // Initial y position
         SCREEN_WIDTH,                // Width, in pixels
