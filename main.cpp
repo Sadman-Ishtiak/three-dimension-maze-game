@@ -2,9 +2,11 @@
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
 #include <cmath>
+#include <cstddef>
 #define PI 3.14159265358979323846
 using namespace std;
 
@@ -82,7 +84,11 @@ inline vec3 unit_vector(vec3 a) {
     return a/a.length();
 }
 
-
+struct ray {
+    vec3 orig, dir;
+    ray(vec3 o, vec3 d) : orig(o), dir(d) {}
+    vec3 at(double t) const { return orig + dir*t; }
+};
 
 
 
@@ -91,6 +97,10 @@ inline vec3 unit_vector(vec3 a) {
 
 
 int32_t main() {
+    // defining the screen buffer variables
+    vector<Uint32> buffer((size_t)SCREEN_WIDTH*SCREEN_HEIGHT);
+    Uint32 pitch = SCREEN_WIDTH*sizeof(Uint32);
+
     // 1. Checking everything before running the code
     cout << "Hello World" << endl;
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
