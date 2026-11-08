@@ -10,6 +10,28 @@
 #define PI 3.14159265358979323846
 using namespace std;
 
+const int MAZE_W = 16;
+const int MAZE_H = 16;
+
+const char* MAP[MAZE_H] = {
+    "################",
+    "#S....#........#",
+    "#####.#.######.#",
+    "#...#.#......#.#",
+    "###.#.#.####.#.#",
+    "#...#.#.#....#.#",
+    "#.###.#.#.####.#",
+    "#.#...#.#......#",
+    "#.#.###.######.#",
+    "#.#.....#.#....#",
+    "#.#######.#.####",
+    "#.........#....#",
+    "#.#########.##.#",
+    "#.#..........#.#",
+    "#...#####.#..#E#",
+    "################",
+};
+
 
 // Global variables and constant definition area
 const int       SCREEN_WIDTH    = 640;
@@ -113,7 +135,33 @@ vec3 floor_color_at(const vec3& point) {
     }
 }
 
+// FPV CODE COPY
+void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
+    // camera basis -- once per FRAME, not per-pixel
+    double half_w = tan(FOV_DEG * PI / 360.0);
+    double half_h = half_w * SCREEN_HEIGHT / SCREEN_WIDTH;   // aspect-corrected
+    vec3 forward = vec3(cos(yaw), 0.0, sin(yaw));
+    vec3 right   = cross(forward, vec3(0, 1, 0));            // F x UP = right-hand rule
 
+    for (int j = 0; j < SCREEN_HEIGHT; j++) {
+        double v = (1.0 - 2.0*(j + 0.5)/SCREEN_HEIGHT) * half_h;
+        for (int i = 0; i < SCREEN_WIDTH; i++) {
+            double u = (2.0*(i + 0.5)/SCREEN_WIDTH - 1.0) * half_w;
+            ray r(eye, unit_vector(forward + u*right + v*vec3(0, 1, 0)));
+
+            vec3 c;
+            if (r.direction.y() < -1e-9) {              // aims DOWN -> floor y=0
+                double t = -eye.y() / r.direction.y();  // solve eye.y + dir.y*t = 0
+                if (t > 1e-6) c = floor_color_at(r.at(t));
+            }
+            if (c == vec3()) c = vec3(0.22, 0.22, 0.26); // sky for now (or elf/else branch)
+
+            Uint8 r8 = (Uint8)(c.x()*255.99), g8 = (Uint8)(c.y()*255.99),
+                  b8 = (Uint8)(c.z()*255.99);
+            buf[(size_t)j*SCREEN_WIDTH + i] = (255u<<24) | (r8<<16) | (g8<<8) | b8;
+        }
+    }
+}
 
 
 
