@@ -2,6 +2,7 @@
 #include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
 #include <cmath>
+#include <system_error>
 #define PI 3.14159265358979323846
 using namespace std;
 
@@ -65,8 +66,12 @@ inline vec3 operator*(const vec3 b, const double a) {
 inline vec3 operator/(const vec3 a, double t) {
     return (1/t) * a;
 }
-
-
+inline double dot(const vec3 a, const vec3 b) {
+    return a.x()*b.x() + a.y()*b.y() + a.z()*b.z();
+}
+inline vec3 cross(const vec3 a, const vec3 b) {
+    return vec3();
+}
 
 
 
