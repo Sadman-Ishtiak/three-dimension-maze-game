@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
@@ -116,7 +117,9 @@ int32_t main() {
         SCREEN_WIDTH,
         SCREEN_HEIGHT
     );
-    if (texture == NULL)
+    if (texture == NULL) {
+        cout << "Texture creation failed : " << SDL_GetError() << endl;
+    }
 
 
 
