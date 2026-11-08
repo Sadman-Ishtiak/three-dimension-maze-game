@@ -2,7 +2,6 @@
 #include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
 #include <cmath>
-#include <system_error>
 #define PI 3.14159265358979323846
 using namespace std;
 
@@ -41,7 +40,7 @@ class vec3 {
             return *this *= 1/t;
         }
         double length_squared() {
-            return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+            return x()*x() + y()*y() + z()*z();
         }
         double length() {
             return sqrt(length_squared());
