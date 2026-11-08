@@ -9,6 +9,28 @@ using namespace std;
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
+class vec3 {
+    public:
+        double e[3];
+        vec3() : e{0,0,0} {}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int32_t main() {
     // 1. Checking everything before running the code
