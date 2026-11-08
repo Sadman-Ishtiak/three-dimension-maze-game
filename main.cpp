@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
 #include <cmath>
@@ -104,6 +105,11 @@ int32_t main() {
         SCREEN_HEIGHT,               // Height, in pixels
         SDL_WINDOW_SHOWN             // Flags (makes it visible)
     );
+
+    SDL_Renderer renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) renderer = SDL_CreateRenderer(window, -1, 0);
+
+
 
     // Check if the window was successfully created
     if (window == NULL) {
