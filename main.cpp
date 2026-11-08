@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
 #define PI 3.14159265358979323846
 using namespace std;
@@ -37,6 +38,7 @@ int32_t main() {
     // 3. Main event loop setup
     SDL_Event event;
     bool quit = false;
+    double start_time = SDL_GetTicks();
 
     // Keep the window open until the user closes it
     while (!quit) {
@@ -48,6 +50,9 @@ int32_t main() {
             }
         }
     }
+
+    double end_time = SDL_GetTicks();
+    cout << "Total time spent = " << (end_time - start_time)/1000 << " seconds\n";
 
     // 4. Clean up and free resources
     SDL_DestroyWindow(window);
