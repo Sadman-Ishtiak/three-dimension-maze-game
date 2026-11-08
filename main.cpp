@@ -45,14 +45,26 @@ class vec3 {
         double length() {
             return sqrt(length_squared());
         }
-
 };
 
-
-
-
-
-
+inline vec3 operator+(const vec3 a, const vec3 b) {
+    return vec3(a.x()+b.x(), a.y()+b.y(), a.z()+b.z());
+}
+inline vec3 operator-(const vec3 a, const vec3 b) {
+    return vec3(a.x()-b.x(), a.y()-b.y(), a.z()-b.z());
+}
+inline vec3 operator*(const vec3 a, const vec3 b) {
+    return vec3(a.x()*b.x(), a.y()*b.y(), a.z()*b.z());
+}
+inline vec3 operator*(const double a, const vec3 b) {
+    return vec3(a*b.x(), a*b.y(), a*b.z());
+}
+inline vec3 operator*(const vec3 b, const double a) {
+    return vec3(a*b.x(), a*b.y(), a*b.z());
+}
+inline vec3 operator/(const vec3 a, double t) {
+    return (1/t) * a;
+}
 
 
 
