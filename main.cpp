@@ -153,8 +153,10 @@ void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
             if (r.direction.y() < -1e-9) {              // aims DOWN -> floor y=0
                 double t = -eye.y() / r.direction.y();  // solve eye.y + dir.y*t = 0
                 if (t > 1e-6) c = floor_color_at(r.at(t));
+                else c = vec3(0.22, 0.22, 0.26);
+            } else {
+                c = vec3(0.22, 0.22, 0.26);                  // horizontal/up rays → sky
             }
-            if (c == vec3()) c = vec3(0.22, 0.22, 0.26); // sky for now (or elf/else branch)
 
             Uint8 r8 = (Uint8)(c.x()*255.99), g8 = (Uint8)(c.y()*255.99),
                   b8 = (Uint8)(c.z()*255.99);
@@ -219,6 +221,7 @@ int32_t main() {
     while (!quit) {
         // Poll for pending events (clicks, keypresses, window close)
         while (SDL_PollEvent(&event) != 0) {
+            render(buffer, vec3(pos.x(), EYE_HEIGHT, pos.z()), yaw);
             // User requests quit (e.g., clicking the 'X' button)
             if (event.type == SDL_QUIT) {
                 quit = true;
