@@ -1,0 +1,99 @@
+name: Build executables
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux
+            os: ubuntu-latest
+          - name: macos
+            os: macos-latest
+          - name: windows
+            os: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      # ---------------- Linux ----------------
+      - name: Install SDL2 (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          g++ main.cpp -o dist/maze -std=c++20 -O2 -Wall -Wextra \
+            $(sdl2-config --cflags) $(sdl2-config --libs) \
+            -Wl,-rpath,'$ORIGIN'
+          # Bundle the SDL2 shared library next to the binary.
+          SDL2_SO=$(find /usr/lib -name 'libSDL2-2.0.so.0' -print -quit 2>/dev/null || true)
+          cp "$SDL2_SO" dist/
+
+      # ---------------- macOS ----------------
+      - name: Install SDL2 + GCC (macOS)
+        if: runner.os == 'macOS'
+        run: brew install sdl2 gcc
+
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          # Homebrew GCC ships <bits/stdc++.h>, which the source uses; Apple clang does not.
+          GXX=$(find "$(brew --prefix gcc)/bin" -name 'g++-*' | sort -V | tail -1)
+          "$GXX" main.cpp -o dist/maze -std=c++20 -O2 -Wall -Wextra \
+            -I"$(brew --prefix)/include" \
+            $(sdl2-config --cflags) $(sdl2-config --libs)
+          # Point the binary at a bundled dylib instead of the runner's Homebrew path.
+          OLD=$(otool -L dist/maze | awk '/libSDL2.*dylib/ {print $1; exit}')
+          install_name_tool -change "$OLD" "@executable_path/libSDL2-2.0.0.dylib" dist/maze
+          cp -L "$(brew --prefix sdl2)/lib/libSDL2-2.0.0.dylib" dist/
+          codesign --force --sign - dist/maze
+
+      # ---------------- Windows ----------------
+      - name: Setup MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          mkdir -p dist
+          # SDL_MAIN_HANDLED keeps your normal main() and avoids SDL2main's
+          # Windows-only main() rename, which needs argc/argv.
+          g++ main.cpp -o dist/maze.exe -std=c++20 -O2 -Wall -Wextra \
+            -I/mingw64/include -I/mingw64/include/SDL2 \
+            -DSDL_MAIN_HANDLED -lSDL2
+          # Bundle every MinGW DLL the executable needs (SDL2.dll, libstdc++, ...).
+          ldd dist/maze.exe | awk '/=>/ && $3 ~ /mingw64/ {print $3}' \
+            | while read -r dll; do cp "$dll" dist/; done
+
+      - name: Upload executables
+        uses: actions/upload-artifact@v4
+        with:
+          name: maze-${{ matrix.name }}
+          path: dist/
+          if-no-files-found: error
