@@ -22,8 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # 22.04 keeps the artifacts x86-64 baseline; 24.04+ builds are v3-only.
           - name: linux
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - name: macos
             os: macos-latest
           - name: windows
