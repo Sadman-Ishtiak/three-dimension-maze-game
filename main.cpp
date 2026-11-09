@@ -2,6 +2,7 @@
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include<bits/stdc++.h>
@@ -43,6 +44,13 @@ const double    EYE_HEIGHT      = 0.5;   // camera height: middle of a 1-unit wa
 const double    FOV_DEG         = 75.0;
 const double    MOVE_SPD        = 2.0;   // units per second (ground speed)
 const double    TURN_SPD        = 2.5;   // radians per second (turning speed)
+const double    CAPS_MULTIPLIER = 2.5;
+const double WALL_H = 1.0;   // each '#' is a unit cube: z in [0,1], filling one map cell
+
+static bool is_wall(int cx, int cy) {
+    if (cx < 0 || cy < 0 || cx >= MAZE_W || cy >= MAZE_H) return true;  // outside = solid
+    return MAP[cy][cx] == '#';     // rows are the y axis (the ground's second axis)
+}
 
 class vec3 {
     public:
@@ -177,8 +185,8 @@ void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
 // mutates only pos.x/y and yaw; z (altitude) is constant in this game
 void update(vec3& pos, double& yaw, double dt, const Uint8* keys) {
     // turning: left/right votes -> continuous intent * TURN_SPD * dt
-    yaw += ((keys[SDL_SCANCODE_RIGHT] ? 1.0 : 0.0) -
-            (keys[SDL_SCANCODE_LEFT]  ? 1.0 : 0.0)) * TURN_SPD * dt;
+    yaw += ((keys[SDL_SCANCODE_LEFT] ? 1.0 : 0.0) -
+            (keys[SDL_SCANCODE_RIGHT]  ? 1.0 : 0.0)) * TURN_SPD * dt;
 
     // frame basis, computed fresh here (never shared with render())
     vec3 forward = vec3(cos(yaw), sin(yaw), 0.0);   // flat in ground x/y
@@ -188,7 +196,9 @@ void update(vec3& pos, double& yaw, double dt, const Uint8* keys) {
     double fwd  = (keys[SDL_SCANCODE_W] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_S] ? 1.0 : 0.0);
     double side = (keys[SDL_SCANCODE_D] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_A] ? 1.0 : 0.0);
 
-    vec3 step = (forward * fwd + right * side) * (MOVE_SPD * dt);
+    bool is_fast = keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT] || (SDL_GetModState() & KMOD_CAPS);
+    double current_speed = is_fast ? (MOVE_SPD * CAPS_MULTIPLIER) : MOVE_SPD;
+    vec3 step = (forward * fwd + right * side) * (current_speed * dt);
 
     // commit, per-axis. Once walls exist, each line becomes:
     //   if (!collides(candidate)) pos.axis += delta;   // slide along walls
