@@ -7,6 +7,9 @@ on:
 permissions:
   contents: read
 
+env:
+  MAZE_VERSION: "1.0.0"
+
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
@@ -41,7 +44,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           mkdir -p dist
-          g++ main.cpp -o dist/maze -std=c++20 -O2 -Wall -Wextra \
+          g++ main.cpp -o "dist/maze-${MAZE_VERSION}" -std=c++20 -O2 -Wall -Wextra \
             $(sdl2-config --cflags) $(sdl2-config --libs) \
             -Wl,-rpath,'$ORIGIN'
           # Bundle the SDL2 shared library next to the binary.
@@ -59,14 +62,16 @@ jobs:
           mkdir -p dist
           # Homebrew GCC ships <bits/stdc++.h>, which the source uses; Apple clang does not.
           GXX=$(find "$(brew --prefix gcc)/bin" -name 'g++-*' | sort -V | tail -1)
-          "$GXX" main.cpp -o dist/maze -std=c++20 -O2 -Wall -Wextra \
+          "$GXX" main.cpp -o "dist/maze-${MAZE_VERSION}" -std=c++20 -O2 -Wall -Wextra \
             -I"$(brew --prefix)/include" \
+            -static-libstdc++ -static-libgcc \
             $(sdl2-config --cflags) $(sdl2-config --libs)
           # Point the binary at a bundled dylib instead of the runner's Homebrew path.
-          OLD=$(otool -L dist/maze | awk '/libSDL2.*dylib/ {print $1; exit}')
-          install_name_tool -change "$OLD" "@executable_path/libSDL2-2.0.0.dylib" dist/maze
+          BIN="dist/maze-${MAZE_VERSION}"
+          OLD=$(otool -L "$BIN" | awk '/libSDL2.*dylib/ {print $1; exit}')
+          install_name_tool -change "$OLD" "@executable_path/libSDL2-2.0.0.dylib" "$BIN"
           cp -L "$(brew --prefix sdl2)/lib/libSDL2-2.0.0.dylib" dist/
-          codesign --force --sign - dist/maze
+          codesign --force --sign - "$BIN"
 
       # ---------------- Windows ----------------
       - name: Setup MSYS2 (Windows)
@@ -84,16 +89,16 @@ jobs:
           mkdir -p dist
           # SDL_MAIN_HANDLED keeps your normal main() and avoids SDL2main's
           # Windows-only main() rename, which needs argc/argv.
-          g++ main.cpp -o dist/maze.exe -std=c++20 -O2 -Wall -Wextra \
+          g++ main.cpp -o "dist/maze-${MAZE_VERSION}.exe" -std=c++20 -O2 -Wall -Wextra \
             -I/mingw64/include -I/mingw64/include/SDL2 \
             -DSDL_MAIN_HANDLED -lSDL2
           # Bundle every MinGW DLL the executable needs (SDL2.dll, libstdc++, ...).
-          ldd dist/maze.exe | awk '/=>/ && $3 ~ /mingw64/ {print $3}' \
+          ldd "dist/maze-${MAZE_VERSION}.exe" | awk '/=>/ && $3 ~ /mingw64/ {print $3}' \
             | while read -r dll; do cp "$dll" dist/; done
 
       - name: Upload executables
         uses: actions/upload-artifact@v4
         with:
-          name: maze-${{ matrix.name }}
+          name: maze-v${{ env.MAZE_VERSION }}-${{ matrix.name }}
           path: dist/
           if-no-files-found: error

@@ -384,6 +384,8 @@ int32_t main() {
     Uint32 pitch = SCREEN_WIDTH*sizeof(Uint32);
 
     // 1. Initialize SDL
+    // Windows builds define SDL_MAIN_HANDLED, so SDL must be told main() is ready.
+    SDL_SetMainReady();
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
