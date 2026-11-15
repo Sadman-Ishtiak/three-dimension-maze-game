@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{vec3}\PYG{+w}{ }\PYG{n+nf}{floor\PYGZus{}color\PYGZus{}at}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{point}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{point}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{point}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}x}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}z}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.20}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.85}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.30}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// green exit tile}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{is\PYGZus{}light\PYGZus{}tile}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{(}\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{is\PYGZus{}light\PYGZus{}tile}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.60}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.58}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.55}\PYG{p}{)}\PYG{+w}{  }\PYG{c+c1}{// light gray}
+\PYG{+w}{                        }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.30}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.30}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.33}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// dark gray}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

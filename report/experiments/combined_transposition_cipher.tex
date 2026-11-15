@@ -1,0 +1,202 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+Combined transposition cipher layers two transposition techniques---column transposition and rail fence---to increase diffusion. In our implementation, column transposition is applied first, then rail fence. Decryption reverses the order: rail fence first, then column transposition, similar to peeling onion layers.
+
+
+\section{Algorithm}
+\subsection*{Encryption Algorithm}
+\begin{enumerate}
+  \item Input plaintext \texttt{text} and key length \texttt{k}. Generate a random permutation key of size \texttt{k}.
+  \item \textbf{Column transposition:} Pad text to fill a grid of width \texttt{k}, then read columns in permutation order to produce intermediate string.
+  \item \textbf{Rail fence:} On the intermediate string, collect even-indexed characters first, then odd-indexed characters, to produce the ciphertext.
+  \item Combined call: \texttt{ciphertext = r.encrypt(col.encrypt(text))}
+\end{enumerate}
+
+\subsection*{Decryption Algorithm}
+\begin{enumerate}
+  \item Input ciphertext \texttt{text}, same key length \texttt{k}, and same permutation key.
+  \item \textbf{Rail fence (reverse):} Place characters alternately into even and odd positions to recover the intermediate string.
+  \item \textbf{Column transposition (reverse):} Fill the grid column-by-column in permutation order, then read row-by-row to recover the padded plaintext.
+  \item Combined call: \texttt{plaintext\_padded = col.decrypt(r.decrypt(ciphertext))}
+  \item Truncate to original length: \texttt{plaintext = plaintext\_padded.substr(0, orig\_len)}
+\end{enumerate}
+% \section{Flowchart (motherboard)}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, below=of start] {Input};
+%     \node (process1) [process, below=of input] {Process};
+%     \node (decision1) [decision, below=of process1, yshift=-0.2cm] {Condition?};
+%     \node (loopstep) [process, right=of decision1, xshift=1.2cm] {Update / Loop};
+%     \node (output) [io, below=of decision1, yshift=-0.3cm] {Output};
+%     \node (end) [terminator, below=of output] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (process1);
+%     \draw [line] (process1) -- (decision1);
+
+%     \draw [line] (decision1.east) -- node[above]{No} (loopstep.west);
+%     \draw [line] (loopstep.north) |- ([xshift=1.0cm]process1.east) |- (process1.east);
+
+%     \draw [line] (decision1) -- node[right]{Yes} (output);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart title}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class column {
+  vector<int> key;
+public:
+  column(int k);
+  void showKey();
+  string encrypt(string text);
+  string decrypt(string text);
+};
+column::column(int k) {
+  for (int i = 0; i < k; i++) {
+    key.push_back(i);
+  }
+  for (int i = 0; i < k*10; i++) {
+    int j = rand() % k;
+    swap(key[i % k], key[j]);
+  }
+}
+void column::showKey() {
+  cout << "\nKey is: ";
+  for (int i = 0; i < key.size(); i++)
+    cout << key[i] << " ";
+  cout << endl;
+}
+string column::encrypt(string text) {
+  int k = key.size();
+  int n = text.size();
+  int rows = (n + k - 1) / k;
+  // pad text with spaces to fill the grid
+  text.append(rows * k - n, ' ');
+  string encrypted;
+  encrypted.reserve(rows * k);
+  // read columns in order of key
+  for (int colIndex = 0; colIndex < k; ++colIndex) {
+    int col = key[colIndex];
+    for (int r = 0; r < rows; ++r) {
+      encrypted.push_back(text[r * k + col]);
+    }
+  }
+  return encrypted;
+}
+string column::decrypt(string text) {
+  int k = key.size();
+  int n = text.size();
+  int rows = (n + k - 1) / k;
+  // build empty grid
+  vector<char> grid(rows * k, ' ');
+  int pos = 0;
+  // fill columns in order of key
+  for (int colIndex = 0; colIndex < k && pos < n; ++colIndex) {
+    int col = key[colIndex];
+    for (int r = 0; r < rows && pos < n; ++r) {
+      grid[r * k + col] = text[pos++];
+    }
+  }
+  // read row-major
+  string decrypted;
+  decrypted.reserve(rows * k);
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < k; ++c) {
+      decrypted.push_back(grid[r * k + c]);
+    }
+  }
+  return decrypted;
+}
+class rail {
+  public:
+    rail();
+    string encrypt(string s);
+    string decrypt(string s);
+};
+rail::rail() {}
+string rail::encrypt(string s) {
+  string ans;
+  int n = s.length();
+  if (n%2 == 1) {
+    s+=' ';
+    n++;
+  }
+  for (int i = 0; i < n; i+=2)
+    ans+= s[i];
+  for (int i = 1; i < n; i+=2)
+    ans += s[i];
+  return ans;
+}
+string rail::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (i%2 == 0) {
+      ans[i] = s[i/2];
+    } else {
+      ans[i] = s[n/2 + i/2];
+    }
+  }
+  return ans;
+}
+class combined {
+  private:
+    column col;
+    rail r;
+public:
+  combined(int k) : col(k) {}
+  void showKey() {
+    col.showKey();
+  }
+  string encrypt(string text) {
+    return r.encrypt(col.encrypt(text));
+  }
+  string decrypt(string text) {
+    return col.decrypt(r.decrypt(text));
+  }
+};
+int main() {
+  srand(time(0));
+  int k;
+  cout << "Enter the key length: ";
+  cin >> k;
+  cin.ignore();
+  combined cipher(k);
+  cipher.showKey();
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  int orig_len = text.size();
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  decrypted = decrypted.substr(0, orig_len);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+Combined Transposition cipher is quite flexible to use in most cases with very little restriction.
+\begin{minted}{text}
+Enter the key length: 5
+
+Key is: 1 2 0 4 3
+Enter Plaintext : This is encrypted
+Encrypted text: hriyTc tspsd  ien e
+Decrypted text: This is encrypted
+\end{minted}
+
+\section{Conclusion}
+We successfully implemented a Combined Transposition Cipher by layering Columnar Transposition and Rail Fence techniques. The experiment demonstrates that composing multiple simple transpositions significantly increases diffusion and obscures plaintext patterns.

@@ -1,0 +1,168 @@
+\documentclass[a4paper,12pt,oneside,openright]{report}
+\usepackage[top=2.5cm, bottom=2cm, left=2.54cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{fvextra}
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{fvextra}
+\usepackage{tocloft}
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{cite}
+\usepackage[nottoc]{tocbibind}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{adjustbox}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
+
+% TikZ styles for flowcharts
+\tikzset{
+  flowchart/.style={
+    node distance=1.5cm and 2.2cm,
+    every node/.style={outer sep=2pt}
+  },
+  terminator/.style={
+    ellipse,
+    draw=black,
+    align=center,
+    font=\small,
+    inner sep=3pt,
+    text width=2.8cm
+  },
+  process/.style={
+    rectangle,
+    draw=black,
+    align=center,
+    font=\small,
+    inner sep=3pt,
+    text width=3.4cm
+  },
+  decision/.style={
+    diamond,
+    draw=black,
+    aspect=2,
+    align=center,
+    font=\small,
+    inner sep=2pt,
+    text width=2.7cm
+  },
+  io/.style={
+    trapezium,
+    trapezium left angle=70,
+    trapezium right angle=110,
+    draw=black,
+    align=center,
+    font=\small,
+    inner sep=3pt,
+    text width=3.2cm
+  },
+  line/.style={
+    -{Stealth[length=1.5mm]},
+    thick
+  }
+}
+
+% Auto-fit wrapper for TikZ flowcharts
+\newenvironment{autofitflowchart}[1][]
+{%
+  \begin{adjustbox}{max width=\linewidth,max totalheight=0.72\textheight,keepaspectratio}%
+  \begin{tikzpicture}[flowchart,#1]}
+  {\end{tikzpicture}
+  \end{adjustbox}%
+}
+
+\renewcommand{\bibname}{References}
+
+% minted default options
+\setminted{style=tango, linenos, breaklines, autogobble}
+\makeatletter
+\@namedef{PY@tok@n}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.45,0.00}{##1}}} % identifiers
+\makeatother
+
+% Chapter title formatting
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Huge}
+  {\textbf{Chapter~\thechapter\ :\quad}}
+  {0pt}
+  {}
+\titlespacing{\chapter}{0pt}{30pt}{15pt}
+
+% TOC customizations
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\cftchapdotsep}{\cftdotsep}
+
+% Document metadata
+\title{\vspace{1cm}Technical Project Report\\\large Maze Runner 3D}
+\newcommand{\studentname}{Sadman Ishtiak}
+\author{\studentname}
+\newcommand{\reporttitle}{Technical Report on}
+\newcommand{\reportsubtitle}{Maze Runner 3D}
+\newcommand{\course}{CSE-428: Computer Graphics Lab}
+\newcommand{\institute}{Jatiya Kabi Kazi Nazrul Islam University}
+\newcommand{\supervisor}{Dr. Habiba Sultana}
+\newcommand{\supervisordesignation}{(Associate Professor)}
+\newcommand{\studentdetails}{Session: 2021-22 \\ Roll: 22102009 \\ Reg: 10815 \\ Department of Computer Science and Engineering}
+\newcommand{\reportdate}{November 15, 2026}
+\date{\reportdate}
+
+\let\cleardoublepage\clearpage
+\begin{document}
+
+% Custom title page
+\begin{titlepage}
+  \centering
+  \includegraphics[width=0.18\textwidth]{images/Jatiya_Kabi_Kazi_Nazrul_Islam_University_Logo.png}
+  \vspace{0.4cm}
+  {\Large\bfseries \institute}
+  {\small Trishal, Mymensingh}
+  \vspace{0.8cm}
+  {\Large\bfseries Department of Computer Science and Engineering}
+  \vspace{0.8cm}
+  {\Large \reporttitle}
+  {\huge\bfseries \reportsubtitle}
+  \vspace{0.4cm}
+  {\Large \course}
+  \vspace{2.2cm}
+  {\large\bfseries Submitted To}
+  \vspace{0.2cm}
+  {\large \supervisor}
+  {\normalsize \supervisordesignation}
+  {\normalsize Jatiya Kabi Kazi Nazrul Islam University}
+  \vspace{1.2cm}
+  {\large\bfseries Submitted by}
+  \vspace{0.2cm}
+  {\large \studentname}
+  {\normalsize \studentdetails}
+  \vfill
+  {\normalsize Submission Date: \reportdate}
+\end{titlepage}
+
+% Front matter
+\pagenumbering{Roman}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+% Report Chapters
+\input{sections/01_introduction}
+\input{sections/02_methodology}
+\input{sections/05_source_code}
+\input{sections/03_output}
+\input{sections/04_conclusion}
+
+% References
+\clearpage
+\bibliographystyle{ieeetr}
+\bibliography{./reference/reference.bib}
+
+\end{document}

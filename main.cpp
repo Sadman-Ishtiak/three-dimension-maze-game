@@ -1,13 +1,5 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_pixels.h>
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_scancode.h>
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_timer.h>
-#include<bits/stdc++.h>
-#include <cmath>
-#include <cstddef>
+#include <bits/stdc++.h>
 #define PI 3.14159265358979323846
 using namespace std;
 
@@ -91,30 +83,10 @@ class vec3 {
         double y() const { return e[1]; }
         double z() const { return e[2]; }
 
-        vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
-        double operator[](int i) const { return e[i]; }
         double& operator[](int i) { return e[i]; }
 
-        vec3& operator+=(const vec3& v) {
-            e[0] += v.e[0];
-            e[1] += v.e[1];
-            e[2] += v.e[2];
-            return *this;
-        }
-        vec3& operator*=(double t) {
-            e[0] *= t;
-            e[1] *= t;
-            e[2] *= t;
-            return *this;
-        }
-        vec3& operator/=(double t) {
-            return *this *= 1/t;
-        }
-        double length_squared() {
-            return x()*x() + y()*y() + z()*z();
-        }
         double length() {
-            return sqrt(length_squared());
+            return sqrt(x()*x() + y()*y() + z()*z());
         }
 };
 
@@ -161,7 +133,6 @@ class hit_record {
     public:
         double ray_t = 1e30;
         vec3 hit_point, normal, material_color;
-        bool emissive = false;      // true = unlit (the exit beacon)
 };
 
 // +1.0 = standing on the exit, -1.0 = farthest reachable cell.
@@ -171,33 +142,15 @@ static double temperature(const vec3& pos) {
     return 1.0 - 2.0 * d / max_dist;
 }
 
-// Ray vs axis-aligned box, slab method. Only the exit beacon needs this:
-// it is smaller than a cell, so the grid DDA cannot represent it.
-static bool ray_box(const ray& r, const vec3& bmin, const vec3& bmax,
-                    double t0, double t1, double& t_hit, vec3& n_hit) {
-    double tmin = t0, tmax = t1;
-    int axis = -1;
-    double sign = 0.0;
-    for (int a = 0; a < 3; a++) {
-        double inv = 1.0 / r.direction[a];  // +-inf when the component is 0
-        double tn = (bmin[a] - r.origin[a]) * inv;
-        double tf = (bmax[a] - r.origin[a]) * inv;
-        if (tn > tf) swap(tn, tf);
-        if (tn > tmin) { tmin = tn; axis = a; sign = r.direction[a] > 0 ? -1.0 : 1.0; }
-        if (tf < tmax) tmax = tf;
-        if (tmax <= tmin) return false;
-    }
-    if (axis < 0) return false;             // ray origin inside the box
-    t_hit = tmin;
-    n_hit = vec3(axis == 0 ? sign : 0, axis == 1 ? sign : 0, axis == 2 ? sign : 0);
-    return true;
-}
-
 // Floor material: checkerboard over the GROUND plane (x, y). Pattern keys off
 // the two in-plane coordinates; z is altitude here and never varies on the floor.
 vec3 floor_color_at(const vec3& point) {
     int grid_x = (int)floor(point.x());
     int grid_y = (int)floor(point.y());
+
+    if (grid_x == exit_x && grid_y == exit_z) {
+        return vec3(0.20, 0.85, 0.30);  // the exit tile
+    }
 
     bool is_light_tile = ((grid_x + grid_y) % 2) == 0;
 
@@ -218,7 +171,7 @@ hit_record cast_ray(const ray& r) {
             best.ray_t = t;
             best.hit_point = r.at(t);
             best.normal = vec3(0, 0, 1);    // floor faces up
-            best.material_color = floor_color_at(r.at(t));
+            best.material_color = floor_color_at(best.hit_point);
         }
     } else if (r.direction.z() > 1e-9) {    // aims up -> ceiling plane z = WALL_H
         double t = (WALL_H - r.origin.z()) / r.direction.z();
@@ -268,26 +221,12 @@ hit_record cast_ray(const ray& r) {
         else         { t_entry = ty; ty += dty; cy += sy; entry_axis = 1; }
     }
 
-    // Exit beacon: a small glowing cube standing in the exit cell. Tested
-    // last, against best.ray_t, so a wall in front of it still wins.
-    double t;
-    vec3 n;
-    vec3 bmin(exit_x + 0.30, exit_z + 0.30, 0.05);   // z = altitude (0 = floor)
-    vec3 bmax(exit_x + 0.70, exit_z + 0.70, 0.80);
-    if (ray_box(r, bmin, bmax, 1e-6, best.ray_t, t, n)) {
-        best.ray_t          = t;
-        best.hit_point      = r.at(t);
-        best.normal         = n;
-        best.material_color = vec3(0.25, 1.0, 0.35);
-        best.emissive       = true;
-    }
     return best;
 }
 
 // Lambertian shading with a torch carried at the eye. No shadow rays:
 // the light sits where the camera is, so every visible point is lit.
 vec3 shade(const hit_record& h, const vec3& eye) {
-    if (h.emissive) return h.material_color;        // beacon glows, no shading
     vec3 to_light = eye - h.hit_point;              // surface -> torch
     double d2 = dot(to_light, to_light);            // squared distance
     double diff = max(dot(h.normal, unit_vector(to_light)), 0.0);  // Lambert cosine
@@ -300,7 +239,8 @@ vec3 shade(const hit_record& h, const vec3& eye) {
 }
 
 bool collides(const vec3& p) {
-    // Broad phase: only cells the sphere's ground footprint can touch.
+    // The player's altitude is fixed at EYE_HEIGHT, always inside a wall's
+    // z range, so only the ground footprint can collide: circle vs square.
     int x0 = (int)floor(p.x() - PLAYER_R), x1 = (int)floor(p.x() + PLAYER_R);
     int y0 = (int)floor(p.y() - PLAYER_R), y1 = (int)floor(p.y() + PLAYER_R);
 
@@ -308,14 +248,12 @@ bool collides(const vec3& p) {
         for (int cx = x0; cx <= x1; cx++) {
             if (!is_wall(cx, cy)) continue;
 
-            // Closest point on this cube to the sphere center:
-            double qx = clamp(p.x(), (double)cx, cx + 1.0);
-            double qy = clamp(p.y(), (double)cy, cy + 1.0);
-            double qz = clamp(p.z(), 0.0, WALL_H);
+            // Closest point on this square to the circle center:
+            double dx = p.x() - clamp(p.x(), (double)cx, cx + 1.0);
+            double dy = p.y() - clamp(p.y(), (double)cy, cy + 1.0);
 
-            double dx = p.x() - qx, dy = p.y() - qy, dz = p.z() - qz;
             // Compare squared distance to squared radius: no sqrt.
-            if (dx*dx + dy*dy + dz*dz < PLAYER_R * PLAYER_R) return true;
+            if (dx*dx + dy*dy < PLAYER_R * PLAYER_R) return true;
         }
     }
     return false;
@@ -440,7 +378,7 @@ int32_t main() {
     vec3 pos(start_x + 0.5, start_z + 0.5, EYE_HEIGHT);  // cell center horizontally, eye mid-height
     double yaw = 0.0;                                    // facing +x
 
-    printf("Find the glowing green exit cube!\n"
+    printf("Find the green exit tile!\n"
            "Controls: WASD or Up/Down move, A/D strafe, Left/Right turn.\n"
            "Hold Shift or CapsLock to sprint %.1fx. Esc quits.\n"
            "Hot/cold score (+1 at exit, -1 farthest) is in the title bar.\n",
@@ -466,6 +404,7 @@ int32_t main() {
         // --- advance the world: frame clock, then state update ---
         Uint32 now_frame = SDL_GetTicks();
         double dt = (now_frame - last) / 1000.0;
+        cout << "dt = " << dt << "\n";
         last = now_frame;
         if (dt > 0.05) dt = 0.05;   // clamp: a frozen frame can't teleport the player
         update(pos, yaw, dt, SDL_GetKeyboardState(NULL));
@@ -508,17 +447,8 @@ int32_t main() {
         if (spent < 15) SDL_Delay(15 - spent);                  // cap ~60 fps
     }
 
-    double end_time = SDL_GetTicks();
-    cout << "Total time spent = " << (end_time - start_time)/1000 << " seconds\n";
-
-    // win screen: paint the window green for a moment, then exit
-    if (won) {
-        printf("You escaped the maze in %.1f seconds!\n", (end_time - start_time)/1000.0);
-        SDL_SetRenderDrawColor(renderer, 40, 200, 90, 255);
-        SDL_RenderClear(renderer);
-        SDL_RenderPresent(renderer);
-        SDL_Delay(2500);
-    }
+    printf("%s after %.1f seconds.\n",
+           won ? "Escaped the maze" : "Quit", (SDL_GetTicks() - start_time)/1000.0);
 
     // 4. Clean up and free resources
     SDL_DestroyTexture(texture);

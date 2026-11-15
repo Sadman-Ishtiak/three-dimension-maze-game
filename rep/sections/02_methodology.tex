@@ -1,0 +1,68 @@
+\chapter{Methodology}
+
+% Code excerpts below are taken directly from \texttt{main.cpp}; the line numbers beside them are the file's own.
+
+\section{World and Map}
+
+The world is right-handed with $z$ up: $x,y$ span the ground, the floor is $z=0$, walls are unit cubes with $z\in[0,\texttt{WALL\_H}]$, $\texttt{WALL\_H}=1$, the ceiling is $z=1$, and the eye stays at $z=\texttt{EYE\_HEIGHT}=0.5$.
+
+The maze is the array \texttt{MAP[16]} of 16-character strings (lines 9--26), with \texttt{\#} for wall, \texttt{.} for floor, \texttt{S} for the start and \texttt{E} for the exit. \texttt{MAP[cy][cx]} is the cell whose ground square is $[c_x,c_x+1]\times[c_y,c_y+1]$, so the row index is world $y$ (the code names it \texttt{start\_z}/\texttt{exit\_z} in places, but it is always used as $y$). \texttt{is\_wall} treats everything outside the map as solid, so neither rays nor the player can leave it.
+
+\section{Camera Model}
+
+The camera is a pinhole at the eye position $\mathbf{O}=(x,y,0.5)$ with a single orientation angle, the yaw $\psi$ (no pitch or roll). The basis is
+\begin{equation}
+\mathbf{F}=(\cos\psi,\sin\psi,0),\quad \mathbf{U}=(0,0,1),\quad \mathbf{R}=\mathbf{F}\times\mathbf{U}=(\sin\psi,-\cos\psi,0).
+\end{equation}
+An image plane at distance 1 has half-width $h_w=\tan(\mathrm{FOV}/2)\approx0.767$ and half-height $h_h=h_w H/W\approx0.576$, with $\mathrm{FOV}=75^\circ$ and $W\times H=640\times480$. For pixel $(i,j)$,
+\begin{equation}
+u_i=\Big(\tfrac{2(i+0.5)}{W}-1\Big)h_w,\quad
+v_j=\Big(1-\tfrac{2(j+0.5)}{H}\Big)h_h,\quad
+\mathbf{D}_{ij}=\frac{\mathbf{F}+u_i\mathbf{R}+v_j\mathbf{U}}{\lVert\mathbf{F}+u_i\mathbf{R}+v_j\mathbf{U}\rVert},
+\end{equation}
+and the ray is $\mathbf{P}(t)=\mathbf{O}+t\mathbf{D}_{ij}$. Because $\mathbf{D}$ is a unit vector, $t$ is the true distance from the eye.
+
+\srcexcerpt{262}{284}
+
+The basis depends only on yaw, so it is computed once per frame outside the pixel loops. Colours in $[0,1]$ are packed into 32-bit ARGB; multiplying by $255.99$ before truncating maps $1.0$ to $255$.
+
+\section{Ray--Surface Intersection}
+
+\texttt{cast\_ray} (lines 164--225) returns a \texttt{hit\_record} (distance, point, normal, colour), starting from $t=10^{30}$ meaning ``no hit''.
+
+\textbf{Floor and ceiling.} A plane $z=z_p$ is met at $t=(z_p-O_z)/D_z$. Rays pointing down ($D_z<-10^{-9}$) can only hit the floor, rays pointing up only the ceiling, and near-horizontal rays skip both, which avoids division by almost zero. The floor colour comes from \texttt{floor\_color\_at}: bright green inside the exit cell, otherwise light or dark grey by the parity of $\lfloor x\rfloor+\lfloor y\rfloor$ (a checkerboard). The distance \texttt{t\_plane} is kept; a wall only matters if it is nearer.
+
+\textbf{Walls: grid traversal.} With $(c_x,c_y)$ the eye's cell and $s_x,s_y\in\{\pm1\}$ the signs of $D_x,D_y$, the distance along the ray needed to cross one cell is $\Delta t_x=|1/D_x|$, $\Delta t_y=|1/D_y|$, and the first grid-line crossings are
+\begin{equation}
+t_x=\begin{cases}(c_x+1-O_x)\Delta t_x & s_x>0\\ (O_x-c_x)\Delta t_x & s_x<0\end{cases}\qquad
+t_y=\begin{cases}(c_y+1-O_y)\Delta t_y & s_y>0\\ (O_y-c_y)\Delta t_y & s_y<0.\end{cases}
+\end{equation}
+At each step the smaller of $t_x,t_y$ is the next grid line crossed: it becomes the entry distance $t_{\text{entry}}$, the cell index moves by $s_x$ or $s_y$, and that value grows by $\Delta t_x$ or $\Delta t_y$. Cells are therefore visited in the exact order the ray passes through them. On entering a wall cell, the ray's altitude $O_z+t_{\text{entry}}D_z$ is checked against $[0,\texttt{WALL\_H}]$; if inside, the face just crossed is the visible surface, with normal $(-s_x,0,0)$ or $(0,-s_y,0)$, and the function returns immediately since the first hit is the nearest. The loop is capped at 256 steps and stops once $t_{\text{entry}}$ passes \texttt{t\_plane}.
+
+\srcexcerpt{187}{225}
+
+\section{Shading}
+
+A single point light sits at the eye, like a torch carried by the player, so every visible point is lit and no shadow rays are needed. With surface normal $\mathbf{N}$, unit vector $\boldsymbol\ell$ to the eye, squared distance $d^2$ and material colour $\mathbf{k}$:
+\begin{equation}
+\mathbf{C}=\mathbf{k}\odot\Big(\mathbf{a}+\mathbf{L}\max(\mathbf{N}\!\cdot\!\boldsymbol\ell,0)\tfrac{1}{0.9+0.30d^2}\Big),\qquad C'_c=\sqrt{\operatorname{clamp}(C_c,0,1)},
+\end{equation}
+with ambient $\mathbf{a}=(0.14,0.14,0.18)$ and torch colour $\mathbf{L}=(1.7,1.45,1.10)$. The square root is a gamma of 2.0, approximating a display's nonlinear response. Material colours are tan $(0.55,0.47,0.40)$ for walls, $(0.22,0.22,0.26)$ for the ceiling, $(0.60,0.58,0.55)$ and $(0.30,0.30,0.33)$ for floor tiles, and $(0.20,0.85,0.30)$ for the exit tile.
+
+\srcexcerpt{227}{239}
+
+\section{Movement and Collision}
+
+\texttt{update} (lines 286--316) converts key states into signed inputs: yaw changes by $\pm\texttt{TURN\_SPD}\,\Delta t$ ($2.5$ rad/s), forward is the sum of \texttt{W}/Up minus \texttt{S}/Down clamped to $[-1,1]$, and strafe is \texttt{D} minus \texttt{A}. The ground step is $(f\mathbf{F}+g\mathbf{R})\,v\,\Delta t$ with $v=2.0$ units/s, or $5.0$ while sprinting. Diagonal input is not normalised, so it is $\sqrt2$ times faster.
+
+Since the eye is always inside the wall height range, collision is two-dimensional: the player is a circle of radius $0.28$ against unit squares. For each wall cell overlapping the circle's bounding box, the closest point $q$ of the square to the centre $p$ is found by clamping, and a collision occurs if $\lVert p-q\rVert^2<0.28^2$ (no square root needed). The $x$ and $y$ parts of each step are tested and applied separately, so a blocked component is dropped and the player slides along the wall.
+
+\srcexcerpt{241}{260}
+
+\section{Hot/Cold Score}
+
+A straight-line distance would mislead in a maze, so a breadth-first search (BFS) starts at the exit and expands over floor cells in four directions, storing in \texttt{exit\_dist} the walking distance of every cell. It runs once, before the main loop (lines 59--74).
+
+\srcexcerpt{59}{74}
+
+With $d$ the distance of the player's cell and $d_{\max}$ the largest distance, the score is $T=1-2d/d_{\max}\in[-1,1]$: $+1$ on the exit, $-1$ in the farthest cell. Labels are \texttt{HOT} for $T>0.5$, \texttt{WARM} for $T>0$, \texttt{COOL} for $T>-0.5$, otherwise \texttt{COLD}.

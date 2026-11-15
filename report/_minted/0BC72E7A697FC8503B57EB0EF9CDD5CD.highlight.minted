@@ -1,0 +1,4 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{yaw}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}LEFT}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}
+\PYG{+w}{        }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}RIGHT}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{TURN\PYGZus{}SPD}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{;}
+\end{MintedVerbatim}

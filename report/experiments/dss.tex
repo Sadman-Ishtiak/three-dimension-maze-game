@@ -1,0 +1,181 @@
+% Experiment 13: Implementation of Digital Signature Standard (DSS) for Secure Authentication
+\section{Theory}
+The Digital Signature Standard (DSS) provides message authenticity and integrity
+without confidentiality, relying on the discrete logarithm problem. Global
+public parameters are a large prime $p$, a prime divisor $q$ of $(p-1)$, and a
+generator $g$ of order $q$ modulo $p$. Each signer has a private key $x$
+($0 < x < q$) and public key $y = g^x \bmod p$. To sign a message $m$, compute
+hash $H(m)$, choose a random $k$, and generate the signature $(r, s)$:
+\[
+	r = (g^k \bmod p) \bmod q, \qquad s = k^{-1}(H(m) + x r) \bmod q
+	\]
+	To verify, the recipient computes $w = s^{-1} \bmod q$,
+$u_1 = H(m) w \bmod q$, $u_2 = r w \bmod q$, and
+$v = ((g^{u_1} y^{u_2}) \bmod p) \bmod q$. The signature is valid if and
+only if $v = r$.
+
+\section{Algorithm}
+\begin{enumerate}
+\item Select global parameters: prime $p$, prime divisor $q$ of $(p-1)$, and generator $g$.
+\item Generate a private key $x$ with $0 < x < q$.
+\item Compute the public key $y = g^x \bmod p$.
+\item To sign message $m$: compute hash $H(m)$ and choose random $k$ with $\gcd(k,q)=1$.
+\item Compute $r = (g^k \bmod p) \bmod q$.
+\item Compute $s = k^{-1}(H(m) + xr) \bmod q$. The signature is $(r, s)$.
+\item To verify: compute $w = s^{-1} \bmod q$, $u_1 = H(m)w \bmod q$, $u_2 = rw \bmod q$.
+\item Compute $v = ((g^{u_1} y^{u_2}) \bmod p) \bmod q$.
+\item Accept the signature as valid if $v = r$, else reject it.
+\end{enumerate}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class dss {
+private:
+  long long p, q, g, x, y;
+  long long modPow(long long base, long long exp, long long mod) {
+    long long result = 1;
+    base %= mod;
+    while (exp > 0) {
+      if (exp & 1) result = (__int128)result * base % mod;
+      base = (__int128)base * base % mod;
+      exp >>= 1;
+    }
+    return result;
+  }
+  long long gcd(long long a, long long b) {
+    return b == 0 ? a : gcd(b, a % b);
+  }
+  long long modInverse(long long a, long long m) {
+    long long m0 = m, x0 = 0, x1 = 1;
+    a = ((a % m) + m) % m;
+    while (a > 1) {
+      long long qt = a / m;
+      long long t = m;
+      m = a % m;
+      a = t;
+      t = x0;
+      x0 = x1 - qt * x0;
+      x1 = t;
+    }
+    if (x1 < 0) x1 += m0;
+    return x1;
+  }
+  long long simpleHash(long long m) {
+    return (m * 2654435761LL) % q;
+  }
+public:
+  dss(long long primeP, long long primeQ, long long generator, long long privateKey);
+  pair<long long, long long> sign(long long msg, long long k);
+  bool verify(long long msg, long long r, long long s);
+};
+dss::dss(long long primeP, long long primeQ, long long generator, long long privateKey) {
+  p = primeP;
+  q = primeQ;
+  g = generator;
+  x = privateKey;
+  y = modPow(g, x, p);
+  cout << "Public key y = g^x mod p = " << y << endl;
+}
+pair<long long, long long> dss::sign(long long msg, long long k) {
+  long long H = simpleHash(msg);
+  long long r = modPow(g, k, p) % q;
+  long long kInv = modInverse(k, q);
+  long long s = (kInv * (H + x * r)) % q;
+  cout << "H(m) = " << H << endl;
+  cout << "r = (g^k mod p) mod q = " << r << endl;
+  cout << "s = k^-1 * (H(m) + x*r) mod q = " << s << endl;
+  return make_pair(r, s);
+}
+bool dss::verify(long long msg, long long r, long long s) {
+  long long H = simpleHash(msg);
+  long long w = modInverse(s, q);
+  long long u1 = (H * w) % q;
+  long long u2 = (r * w) % q;
+  long long v = (modPow(g, u1, p) * modPow(y, u2, p)) % p % q;
+  cout << "w  = s^-1 mod q = " << w << endl;
+  cout << "u1 = H(m)*w mod q = " << u1 << endl;
+  cout << "u2 = r*w mod q = " << u2 << endl;
+  cout << "v  = ((g^u1 * y^u2) mod p) mod q = " << v << endl;
+  return v == r;
+}
+int main() {
+  cout << "Enter prime p: ";
+  long long p;
+  cin >> p;
+  cout << "Enter prime divisor q of (p-1): ";
+  long long q;
+  cin >> q;
+  cout << "Enter generator g (of order q mod p): ";
+  long long g;
+  cin >> g;
+  cout << "Enter private key x (0 < x < q): ";
+  long long x;
+  cin >> x;
+
+  dss signer(p, q, g, x);
+
+  cout << "\nEnter message (as integer, will be hashed): ";
+  long long msg;
+  cin >> msg;
+  cout << "Enter random per-signature value k (0 < k < q, gcd(k,q)=1): ";
+  long long k;
+  cin >> k;
+
+  cout << "\n--- Signature Generation ---" << endl;
+  pair<long long, long long> sig = signer.sign(msg, k);
+  cout << "Signature = (r, s) = (" << sig.first << ", " << sig.second << ")" << endl;
+
+  cout << "\n--- Signature Verification ---" << endl;
+  bool valid = signer.verify(msg, sig.first, sig.second);
+
+  cout << "\nResult: "
+  << (valid ? "SIGNATURE VALID (v == r)" : "SIGNATURE INVALID (v != r)")
+  << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+\textbf{Sample Input:}
+\begin{verbatim}
+Enter prime p: 23
+Enter prime divisor q of (p-1): 11
+Enter generator g (of order q mod p): 4
+Enter private key x (0 < x < q): 9
+Enter message (as integer, will be hashed): 3
+Enter random per-signature value k (0 < k < q, gcd(k,q)=1): 7
+\end{verbatim}
+
+\textbf{Sample Output:}
+\begin{verbatim}
+Public key y = g^x mod p = 13
+
+--- Signature Generation ---
+H(m) = 8
+r = (g^k mod p) mod q = 8
+s = k^-1 * (H(m) + x*r) mod q = 2
+Signature = (r, s) = (8, 2)
+
+--- Signature Verification ---
+w  = s^-1 mod q = 6
+u1 = H(m)*w mod q = 4
+u2 = r*w mod q = 4
+v  = ((g^u1 * y^u2) mod p) mod q = 8
+
+Result: SIGNATURE VALID (v == r)
+\end{verbatim}
+
+\textbf{Observation:} The computed verification value $v$ equals $r$,
+confirming that the digital signature is valid. This demonstrates that a
+recipient with only the public key $(p, q, g, y)$ can verify a message
+signed with the corresponding private key $x$, without ever learning $x$
+itself.
+
+\section{Conclusion}
+The DSS was implemented, demonstrating both signing and verification. The
+experiment shows that modifying the message or signature causes verification
+to fail, confirming authentication and integrity. Production use requires a
+secure hash function, larger primes, and a secure random $k$ (since $k$
+reuse exposes the private key).

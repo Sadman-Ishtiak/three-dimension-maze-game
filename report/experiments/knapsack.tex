@@ -1,0 +1,160 @@
+% Experiment 15: Implementation and Security Analysis of Knapsack Cryptosystem
+\section{Theory}
+The Merkle-Hellman Knapsack Cryptosystem is an early public-key scheme based
+on the NP-complete subset-sum problem. The private key is a \emph{superincreasing}
+sequence $(b_1, b_2, \dots, b_n)$ where each element exceeds the sum of all
+preceding elements. A modulus $m > \sum b_i$ and coprime multiplier $w$ are
+chosen, and the public key is $a_i = (w \cdot b_i) \bmod m$. Encryption of
+an $n$-bit plaintext block $(x_1, \dots, x_n)$ is a subset sum:
+\[
+C = \sum_{i=1}^{n} x_i a_i
+\]
+Decryption transforms the ciphertext into the superincreasing domain using
+$C' = (C \cdot w^{-1}) \bmod m$, after which the original bits are recovered
+efficiently with a greedy algorithm.
+
+\section{Algorithm}
+\begin{enumerate}
+  \item Generate a private superincreasing sequence $(b_1, \dots, b_n)$.
+  \item Choose modulus $m$ greater than $\sum b_i$.
+  \item Choose multiplier $w$ such that $\gcd(w, m) = 1$.
+  \item Compute the public key $a_i = (w \cdot b_i) \bmod m$ for each $i$.
+  \item To encrypt an $n$-bit plaintext block: compute $C = \sum x_i a_i$ using the public key.
+  \item To decrypt: compute $w^{-1} \bmod m$ and $C' = (C \cdot w^{-1}) \bmod m$.
+  \item Solve the superincreasing subset-sum for $C'$ using the private sequence $(b_1,\dots,b_n)$ with a greedy algorithm (from largest to smallest).
+  \item Recover the original plaintext bits and verify correctness.
+\end{enumerate}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class knapsack {
+  private:
+    int n;
+    vector<long long> priv, pub;
+    long long m, w;
+    long long gcd(long long a, long long b) {
+      return b == 0 ? a : gcd(b, a % b);
+    }
+    long long modInverse(long long a, long long mod) {
+      long long m0 = mod, x0 = 0, x1 = 1;
+      a = ((a % mod) + mod) % mod;
+      while (a > 1) {
+        long long qt = a / mod;
+        long long t = mod;
+        mod = a % mod;
+        a = t;
+        t = x0;
+        x0 = x1 - qt * x0;
+        x1 = t;
+      }
+      if (x1 < 0) x1 += m0;
+      return x1;
+    }
+  public:
+    knapsack(int bits);
+    long long encrypt(string bits);
+    string decrypt(long long cipher);
+};
+knapsack::knapsack(int bits) {
+  n = bits;
+  priv.resize(n);
+  long long sum = 0;
+  for (int i = 0; i < n; i++) {
+    priv[i] = sum + rand() % 5 + 1;
+    sum += priv[i];
+  }
+  cout << "Private (superincreasing) sequence: ";
+  for (auto v : priv) cout << v << " ";
+  cout << endl;
+
+  m = sum + rand() % 10 + 1;
+  do {
+    w = 2 + rand() % (int)(m - 2);
+  } while (gcd(w, m) != 1);
+  cout << "Modulus m = " << m << ", Multiplier w = " << w << endl;
+
+  pub.resize(n);
+  for (int i = 0; i < n; i++) pub[i] = (priv[i] * w) % m;
+  cout << "Public key sequence: ";
+  for (auto v : pub) cout << v << " ";
+  cout << endl;
+}
+long long knapsack::encrypt(string bits) {
+  long long cipher = 0;
+  for (int i = 0; i < n; i++)
+    if (bits[i] == '1') cipher += pub[i];
+  return cipher;
+}
+string knapsack::decrypt(long long cipher) {
+  long long wInv = modInverse(w, m);
+  long long cPrime = (cipher * wInv) % m;
+  cout << "w^-1 mod m = " << wInv << endl;
+  cout << "C' = C * w^-1 mod m = " << cPrime << endl;
+
+  string decrypted(n, '0');
+  for (int i = n - 1; i >= 0; i--) {
+    if (priv[i] <= cPrime) {
+      decrypted[i] = '1';
+      cPrime -= priv[i];
+    }
+  }
+  return decrypted;
+}
+int main() {
+  cout << "Enter number of bits in the block (e.g., 8): ";
+  int n;
+  cin >> n;
+
+  knapsack cipher(n);
+
+  cout << "\nEnter a " << n << "-bit binary plaintext block: ";
+  string bits;
+  cin >> bits;
+
+  long long cipherText = cipher.encrypt(bits);
+  cout << "\n--- Encryption ---" << endl;
+  cout << "Ciphertext (sum using public key) = " << cipherText << endl;
+
+  cout << "\n--- Decryption ---" << endl;
+  string decrypted = cipher.decrypt(cipherText);
+  cout << "Decrypted bits: " << decrypted << endl;
+  cout << "Original bits : " << bits << endl;
+
+  cout << "\nVerification: "
+       << (decrypted == bits ? "SUCCESS - Plaintext recovered correctly"
+                              : "FAILURE - Mismatch")
+       << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+\begin{verbatim}
+Enter number of bits in the block (e.g., 8): 8
+Private (superincreasing) sequence: 4 6 13 24 51 99 199 399
+Modulus m = 805, Multiplier w = 219
+Public key sequence: 71 509 432 426 704 751 111 441
+
+Enter a 8-bit binary plaintext block: 10101100
+
+--- Encryption ---
+Ciphertext (sum using public key) = 1958
+
+--- Decryption ---
+w^-1 mod m = 669
+C' = C * w^-1 mod m = 167
+Decrypted bits: 10101100
+Original bits : 10101100
+\end{verbatim}
+
+\textbf{Observation:} The public key does not appear superincreasing, which
+disguises the private structure; decryption uses $w^{-1}$ to restore the
+easy domain where a greedy algorithm recovers the bits.
+
+\section{Conclusion}
+The Merkle-Hellman Knapsack cryptosystem was implemented, successfully
+encrypting and decrypting an 8-bit block. This scheme is now considered
+broken (Shamir showed the transformation leaks enough structure to recover
+the private key) and is retained for educational purposes.

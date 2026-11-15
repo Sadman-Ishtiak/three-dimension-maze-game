@@ -1,0 +1,304 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+Playfair cipher is a digraph substitution cipher that encrypts pairs of letters. It uses a $5 \times 5$ matrix of letters constructed using a keyword. The letters 'I' and 'J' are typically combined to fit into the 25-letter matrix space since the English alphabet has 26 letters. The substitution rules are,
+\begin{itemize}
+  \item If both letters are in the same row, replace each with the letter to its right (wrapping to the start of the row).
+  \item If both letters are in the same column, replace each with the letter below it (wrapping to the top of the column).
+  \item If the letters are in different rows and columns, replace each letter with the one in the same row but in the column of the other letter. ie diagonal letter.
+\end{itemize}
+
+Since it encrypts digraphs instead of single letters, basic frequency analysis is less effective against it.
+
+An example of a key matrix is,
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    L & G & D & B & A \\
+    \hline
+    Q & M & H & E & C \\
+    \hline
+    U & R & N & I/J & F \\
+    \hline
+    X & V & S & O & K \\
+    \hline
+    Z & Y & W & T & P \\
+    \hline
+  \end{tabular}
+  \caption{Example Key Matrix (Secret Key)}
+\end{table}
+
+
+\section{Algorithm}
+Encryption algorithm for a word using playfair cipher is as follows:
+\begin{enumerate}
+  \item if the word contain odd number of letters, append 'x' to the end of the word.
+  \item If both letters are in the same row, replace each with the letter to its right (wrapping to the start of the row).
+  \item If both letters are in the same column, replace each with the letter below it (wrapping to the top of the column).
+  \item If the letters are in different rows and columns, replace each letter with the one in the same row but in the column of the other letter. ie diagonal letter.
+\end{enumerate}
+
+Decryption algorithm is the reverse of the encryption algorithm:
+\begin{enumerate}
+  \item If both letters are in the same row, replace each with the letter to its left (wrapping to the end of the row).
+  \item If both letters are in the same column, replace each with the letter above it (wrapping to the bottom of the column).
+  \item If the letters are in different rows and columns, replace each letter with the one in the same row but in the column of the other letter. ie diagonal letter.
+\end{enumerate}
+
+
+
+% \section{Flowchart}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator, text width=0.26\linewidth, align=center] {Start};
+%     \node (input) [io, right=of start, text width=0.26\linewidth, align=center] {Input plaintext};
+%     \node (normalize) [process, right=of input, text width=0.26\linewidth, align=center] {Normalize: lowercase, merge I/J, insert x, pad};
+%     \node (loop) [process, below=of normalize, text width=0.26\linewidth, align=center] {Take next digraph};
+%     \node (pos) [process, left=of loop, text width=0.26\linewidth, align=center] {Find positions in 5x5 key matrix};
+%     \node (row) [decision, below=of pos, text width=0.26\linewidth, align=center] {Same row?};
+%     \node (rowop) [process, right=of row, text width=0.26\linewidth, align=center] {Shift right (wrap)};
+%     \node (col) [decision, left=of row, text width=0.26\linewidth, align=center] {Same column?};
+%     \node (colop) [process, above=of col, text width=0.26\linewidth, align=center] {Shift down (wrap)};
+%     \node (rect) [process, below=of col, text width=0.26\linewidth, align=center] {Rectangle swap columns};
+%     \node (append) [process, right=of rect, text width=0.26\linewidth, align=center] {Append cipher digraph};
+%     \node (more) [decision, right=of append, text width=0.26\linewidth, align=center] {More digraphs?};
+%     \node (output) [io, below=of more, text width=0.26\linewidth, align=center] {Output ciphertext};
+%     \node (end) [terminator, left=of output, text width=0.26\linewidth, align=center] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (normalize);
+%     \draw [line] (normalize) -- (loop);
+%     \draw [line] (loop) -- (pos);
+%     \draw [line] (pos) -- (row);
+
+%     \draw [line] (row) -- node[above]{Yes} (rowop);
+%     \draw [line] (row) -- node[above]{No} (col);
+%     % \draw [line] (rowop.north) -- ++(0,0.8cm) -| ([xshift=0.7cm,yshift=0.35cm]append.north) -- (append.north);
+%     \draw [line] (rowop) -- (append);
+
+%     \draw [line] (col) -- node[left]{Yes} (colop);
+%     \draw [line] (col) -- node[left]{No} (rect);
+%     \draw [line] (colop.west) -- ++(-1.0cm,0) |- ([xshift=-0.7cm,yshift=-0.35cm]append.south) -- (append.south);
+%     % \draw [line] (colop) -- (append);
+
+%     \draw [line] (rect) -- (append);
+%     \draw [line] (append) -- (more);
+%     \draw [line] (more.east) -- node[above]{Yes} ++(2.0cm,0) |- (loop.east);
+%     \draw [line] (more.south) -- node[right]{No} (output.north);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Encryption flowchart for Playfair Cipher}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator, text width=0.26\linewidth, align=center] {Start};
+%     \node (input) [io, right=of start, text width=0.26\linewidth, align=center] {Input ciphertext};
+%     \node (loop) [process, below=of input, text width=0.26\linewidth, align=center] {Take next digraph};
+%     \node (pos) [process, left=of loop, text width=0.26\linewidth, align=center] {Find positions in 5x5 key matrix};
+%     \node (row) [decision, below=of pos, text width=0.26\linewidth, align=center] {Same row?};
+%     \node (rowop) [process, right=of row, text width=0.26\linewidth, align=center] {Shift left (wrap)};
+%     \node (col) [decision, left=of row, text width=0.26\linewidth, align=center] {Same column?};
+%     \node (colop) [process, above=of col, text width=0.26\linewidth, align=center] {Shift up (wrap)};
+%     \node (rect) [process, below=of col, text width=0.26\linewidth, align=center] {Rectangle swap columns};
+%     \node (append) [process, right=of rect, text width=0.26\linewidth, align=center] {Append plain digraph};
+%     \node (more) [decision, right=of append, text width=0.26\linewidth, align=center] {More digraphs?};
+%     \node (output) [io, below=of more, text width=0.26\linewidth, align=center] {Output plaintext};
+%     \node (end) [terminator, left=of output, text width=0.26\linewidth, align=center] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (loop);
+%     \draw [line] (loop) -- (pos);
+%     \draw [line] (pos) -- (row);
+
+%     \draw [line] (row) -- node[above]{Yes} (rowop);
+%     \draw [line] (row) -- node[above]{No} (col);
+%     \draw [line] (rowop) -- (append);
+
+%     \draw [line] (col) -- node[left]{Yes} (colop);
+%     \draw [line] (col) -- node[left]{No} (rect);
+%     \draw [line] (colop.west) -- ++(-1.0cm,0) |- ([xshift=-0.7cm,yshift=-0.35cm]append.south) -- (append.south);
+
+%     \draw [line] (rect) -- (append);
+%     \draw [line] (append) -- (more);
+%     \draw [line] (more.east) -- node[above]{Yes} ++(2.0cm,0) |- (loop.east);
+%     \draw [line] (more.south) -- node[right]{No} (output.north);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Decryption flowchart for Playfair Cipher}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+
+string alphabet = "abcdefghjklmnopqrstuvwxyz";
+
+class plaiyfair {
+private:
+  char matrix[5][5];
+  unordered_map<char, pair<int, int>> pos;
+public:
+  plaiyfair();
+  string encrypt(string s);
+  string decrypt(string s);
+  vector<string> encrypt(const vector<string>& texts);
+  vector<string> decrypt(const vector<string>& texts);
+  void print_key();
+};
+
+plaiyfair::plaiyfair() {
+  string s = alphabet;
+  random_device rd;
+  mt19937 gen(rd());
+  shuffle(s.begin(), s.end(), gen);
+
+  int k = 0;
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      matrix[i][j] = s[k];
+      pos[s[k]] = {i, j};
+      ++k;
+    }
+  }
+}
+
+void plaiyfair::print_key() {
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) cout << matrix[i][j] << ' ';
+    cout << endl;
+  }
+}
+
+static string normalize(const string& s) {
+  string t;
+  for (char c : s) {
+    if (isalpha(static_cast<unsigned char>(c))) {
+      c = tolower(c);
+      if (c == 'i') c = 'j';
+      t.push_back(c);
+    }
+  }
+  string u;
+  for (size_t i = 0; i < t.size(); ++i) {
+    u.push_back(t[i]);
+    if (i + 1 < t.size() && t[i] == t[i + 1]) u.push_back('x');
+  }
+  if (u.size() % 2) u.push_back('x');
+  return u;
+}
+
+vector<string> plaiyfair::encrypt(const vector<string>& texts) {
+  vector<string> encrypted_texts;
+  for (const auto& text : texts)  encrypted_texts.push_back(encrypt(text));
+  return encrypted_texts;
+}
+
+string plaiyfair::encrypt(string s) {
+  string t = normalize(s);
+  string out;
+  for (size_t i = 0; i < t.size(); i += 2) {
+    char a = t[i], b = t[i + 1];
+    auto [ra, ca] = pos[a];
+    auto [rb, cb] = pos[b];
+    if (ra == rb) {
+      out.push_back(matrix[ra][(ca + 1) % 5]);
+      out.push_back(matrix[rb][(cb + 1) % 5]);
+    } else if (ca == cb) {
+      out.push_back(matrix[(ra + 1) % 5][ca]);
+      out.push_back(matrix[(rb + 1) % 5][cb]);
+    } else {
+      out.push_back(matrix[ra][cb]);
+      out.push_back(matrix[rb][ca]);
+    }
+  }
+  return out;
+}
+
+vector<string> plaiyfair::decrypt(const vector<string>& texts) {
+  vector<string> decrypted_texts;
+  for (const auto& text : texts) decrypted_texts.push_back(decrypt(text));
+  return decrypted_texts;
+}
+
+string plaiyfair::decrypt(string s) {
+  string out;
+  for (size_t i = 0; i < s.size(); i += 2) {
+    char a = s[i], b = s[i + 1];
+    auto [ra, ca] = pos[a];
+    auto [rb, cb] = pos[b];
+    if (ra == rb) {
+      out.push_back(matrix[ra][(ca + 4) % 5]);
+      out.push_back(matrix[rb][(cb + 4) % 5]);
+    } else if (ca == cb) {
+      out.push_back(matrix[(ra + 4) % 5][ca]);
+      out.push_back(matrix[(rb + 4) % 5][cb]);
+    } else {
+      out.push_back(matrix[ra][cb]);
+      out.push_back(matrix[rb][ca]);
+    }
+  }
+  return out;
+}
+
+int main() {
+  plaiyfair cipher;
+  cout << "Key Matrix:" << endl;
+  cipher.print_key();
+  cout << "Enter Plaintext : ";
+  string text;
+  vector<string>texts;
+  while (cin >> text) {
+    texts.push_back(text);
+  }
+  vector<string> encrypted = cipher.encrypt(texts);
+  cout << "Encrypted text: ";
+  for (const auto& s : encrypted) cout << s << " ";
+  cout << endl;
+  vector<string> decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: ";
+  for (const auto& s : decrypted) cout << s << " ";
+  cout << endl;
+  return 0;
+}
+
+\end{minted}
+\newpage
+\section{Result and Discussion - I/O}
+The program is made to automatically generate a random key matrix for each run, so the encrypted text will be different for the same plaintext in different runs.
+\begin{minted}{text}
+Key Matrix:
+a w v m h
+f u s r o
+e y j p c
+k d t g q
+n x l b z
+Enter Plaintext : sadman
+Encrypted text: fvgwfa
+Decrypted text: sadman
+\end{minted}
+The string automatically normalized to lowercase and all 'i' are counted as 'j'
+\begin{minted}{text}
+Key Matrix:
+o s d u l
+r p f v m
+t y n c w
+j q h g k
+x e b a z
+Enter Plaintext : To be or not to be that is the question
+Encrypted text: jr ab rt tdwx jr ab njxc qo njbx gsspjxdt
+Decrypted text: to be or notz to be that js thez questjon
+\end{minted}
+The program also automatically inserts 'x' when there are an odd number of letters in a word.
+
+\section{Conclusion}
+Playfair cipher is a simple digraph substitution cipher that serves as a stepping stone to understanding block ciphers, though it is vulnerable to statistical attacks with sufficient ciphertext.

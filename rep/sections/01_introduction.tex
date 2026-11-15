@@ -1,0 +1,12 @@
+\chapter{Introduction}
+
+Most 3D games today lean on the GPU to draw triangles, but there is a much older and simpler way to put a 3D world on the screen: ray casting. For every pixel you send a ray out from the eye, find the first surface it hits, and colour the pixel accordingly. When the world is built on a regular grid, like the walls of a maze, finding that first surface is cheap, because you only need to step from one grid cell to the next along the ray. I wanted to see how far this idea could go on its own, so I built a small first-person maze game around it.
+\\
+
+Maze Runner 3D is written in C++20 as a single file, \texttt{main.cpp}, and every pixel is computed on the CPU. SDL2 is used only to open a window, show the finished image and read the keyboard; there are no shaders and no image files. The vector and ray classes follow the style of \emph{Ray Tracing in One Weekend}~\cite{shirley_rtiow}, the window set-up follows the SDL documentation~\cite{sdlwiki}, and walls are found with the grid-walking method of Amanatides and Woo~\cite{amanatides1987fast}.
+\\
+
+The player starts at the \texttt{S} of a $16\times16$ maze and has to reach the \texttt{E}, which appears as a bright green tile on the floor. You move with \texttt{W}/\texttt{S} or the arrow keys, strafe with \texttt{A}/\texttt{D}, turn with the left and right arrows, and hold Shift (or turn on Caps Lock) to sprint. The walls are solid, so you cannot walk through them, but you slide along them instead of getting stuck. The scene is lit by a light that travels with the player, and a ``hot/cold'' score, shown in the window title and as a colour bar at the top of the screen, tells you how close you are to the exit by the actual walking distance rather than the straight line.
+\\
+
+This report explains how the program works. The next chapter covers the geometry and algorithms behind the renderer, the movement and the score, the third chapter walks through the code, the fourth shows the output, and the last discusses the limitations I noticed and concludes. The excerpts keep the line numbers of the original \texttt{main.cpp}.

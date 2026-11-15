@@ -1,0 +1,227 @@
+\section{Theory}
+Additive cipher (also known as Caesar cipher) is a substitution cipher where each character is shifted by a fixed number of positions in the alphabet, wrapping around from z to a. The key is the number of positions shifted. Characters are mapped to a 0-based index: 
+
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{\textwidth}{*{10}{>{\centering\arraybackslash}X}}
+    \textbf{a} & \textbf{b} & \textbf{c} & \textbf{d} & \textbf{e} & \textbf{f} & \textbf{g} & \textbf{h} & \textbf{i} & \textbf{j} \\
+    0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+    \textbf{k} & \textbf{l} & \textbf{m} & \textbf{n} & \textbf{o} & \textbf{p} & \textbf{q} & \textbf{r} & \textbf{s} & \textbf{t} \\
+    10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 \\
+    \multicolumn{2}{c}{} & \textbf{u} & \textbf{v} & \textbf{w} & \textbf{x} & \textbf{y} & \textbf{z} & \multicolumn{2}{c}{} \\
+    \multicolumn{2}{c}{} & 20 & 21 & 22 & 23 & 24 & 25 & \multicolumn{2}{c}{} \\
+  \end{tabularx}
+  \caption{Character positions in the alphabet (0-based indexing)}
+\end{table}
+
+We use these indexes for our encryption process. The mathematical procedure of the encryption process for additive cipher in english alphabet is:
+$$E(x) = (x + k) \% 26$$
+
+where $x$ is the position of the character in the alphabet (0-25), and $k$ is the key. The decryption process is:
+$$D(x) = (x - k + 26) \% 26$$
+
+In code, we must adjust for ASCII values by subtracting the base character. The implementation formulas are:
+\begin{enumerate}
+  \item For lowercase letters:
+  $$E(x) = (x - \text{'a'} + k) \% 26 + \text{'a'}$$
+  $$D(x) = (x - \text{'a'} - k + 26) \% 26 + \text{'a'}$$
+  
+  \item For uppercase letters:
+  $$E(x) = (x - \text{'A'} + k) \% 26 + \text{'A'}$$
+  $$D(x) = (x - \text{'A'} - k + 26) \% 26 + \text{'A'}$$
+\end{enumerate}
+
+
+
+
+\section{Algorithm}
+There are two steps of the program tasks. Encryption and Decryption. The steps of Encryption is:
+\begin{enumerate}
+  \item Key is $k$
+  \item Initialize $i := 0$
+  \item While $i < \text{length}(plaintext)$ do
+  \begin{enumerate}
+    \item If $\text{char}[i]$ is lowercase letter then
+    \begin{enumerate}
+      \item $\text{char}[i] := (\text{char}[i] - \text{'a'} + k) \% 26 + \text{'a'}$
+    \end{enumerate}
+    \item Else if $\text{char}[i]$ is uppercase letter then
+    \begin{enumerate}
+      \item $\text{char}[i] := (\text{char}[i] - \text{'A'} + k) \% 26 + \text{'A'}$
+    \end{enumerate}
+    \item Else
+    \begin{enumerate}
+      \item $\text{char}[i] := \text{char}[i]$ (keep unchanged)
+    \end{enumerate}
+    \item $i := i + 1$
+  \end{enumerate}
+  \item Return encrypted text
+\end{enumerate}
+
+On the other hand, Decryption steps are:
+\begin{enumerate}
+  \item Key is $k$
+  \item Initialize $i := 0$
+  \item While $i < \text{length}(encrypted)$ do
+  \begin{enumerate}
+    \item If $\text{char}[i]$ is lowercase letter then
+    \begin{enumerate}
+      \item $\text{char}[i] := (\text{char}[i] - \text{'a'} - k \% 26 + 26) \% 26 + \text{'a'}$
+    \end{enumerate}
+    \item Else if $\text{char}[i]$ is uppercase letter then
+    \begin{enumerate}
+      \item $\text{char}[i] := (\text{char}[i] - \text{'A'} - k \% 26 + 26) \% 26 + \text{'A'}$
+    \end{enumerate}
+    \item Else
+    \begin{enumerate}
+      \item $\text{char}[i] := \text{char}[i]$ (keep unchanged)
+    \end{enumerate}
+    \item $i := i + 1$
+  \end{enumerate}
+  \item Return decrypted text
+\end{enumerate}
+
+% \section{Flowchart}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of inputkey, xshift=-4cm] {Input Plaintext};
+%     \node (initenc) [process, left=of inputtext] {$i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc) [process, right=of checkchar, xshift=2cm] {$char[i] := (char[i] + k) \% 26$};
+%     % \node (nochange) [process, below=of checkchar] {Keep Unchanged};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Encrypted Text};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc.west);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc) -- (incenc);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Additive Cipher Encryption}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of inputkey, xshift=-4cm] {Input Plaintext};
+%     \node (initenc) [process, left=of inputtext] {$i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc) [process, right=of checkchar, xshift=2cm] {$char[i] := (char[i] - k + 26) \% 26$};
+%     % \node (nochange) [process, below=of checkchar] {Keep Unchanged};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Encrypted Text};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc.west);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc) -- (incenc);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Additive Cipher Encryption}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+class additive {
+  private:
+    int key;
+  public:
+    additive(int k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+additive::additive(int k) {
+  key = k;
+}
+string additive::encrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (s[i] - 'a' + key % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (s[i] - 'A' + key % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+string additive::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (s[i] - 'a' - key % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (s[i] - 'A' - key % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+int main() {
+  cout << "Enter a preffered key: ";
+  int n;
+  cin >> n;
+  cin.ignore();
+  cout << "Key is: " << n << endl;
+  additive cipher(n);
+  cout << "Enter plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+
+\end{minted}
+
+\section{Result and Discussion}
+An example of the input and the output of the program,
+\begin{minted}{text}
+Enter a preffered key: 5
+Key is: 5
+Enter plaintext : To be or not to be that is the question.
+Encrypted text: Yt gj tw sty yt gj ymfy nx ymj vzjxynts.
+Decrypted text: To be or not to be that is the question.
+\end{minted}
+
+Another example with key 13 which is often called ROT-13,
+\begin{minted}{text}
+Enter a preffered key: 13                     
+Key is: 13
+Enter plaintext : This is the plaintext.
+Encrypted text: Guvf vf gur cynvagrkg.
+Decrypted text: This is the plaintext. 
+\end{minted}
+
+
+
+\section{Conclusion}
+The program uses an object-oriented design in C++, encapsulating the key and providing encrypt/decrypt methods. Testing with various keys, cases, and special characters confirms that the additive cipher encryption and decryption work correctly, though the cipher remains insecure for modern use due to its small key space and vulnerability to frequency analysis.

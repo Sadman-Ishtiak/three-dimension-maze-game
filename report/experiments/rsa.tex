@@ -1,0 +1,138 @@
+% Experiment 12: Design and Implementation of RSA Public-Key Cryptosystem
+\section{Theory}
+RSA is an asymmetric cryptosystem based on the computational difficulty of
+factoring the product of two large primes. Given distinct primes $p$ and $q$,
+let $n = p \times q$ and $\phi(n) = (p-1)(q-1)$. A public exponent $e$ is
+chosen with $1 < e < \phi(n)$ and $\gcd(e, \phi(n)) = 1$, and the private
+exponent $d$ satisfies $d \cdot e \equiv 1 \pmod{\phi(n)}$. The public key
+is $(e, n)$ and the private key is $(d, n)$. Encryption and decryption use
+modular exponentiation:
+\[
+C = M^e \bmod n, \qquad M = C^d \bmod n
+\]
+RSA's security relies on the fact that, while multiplying two large primes
+is computationally easy, factoring their product back into $p$ and $q$ is
+computationally infeasible for sufficiently large key sizes.
+
+\section{Algorithm}
+\begin{enumerate}
+  \item Choose two distinct large prime numbers $p$ and $q$.
+  \item Compute $n = p \times q$.
+  \item Compute $\phi(n) = (p-1)(q-1)$.
+  \item Choose public exponent $e$ such that $1 < e < \phi(n)$ and $\gcd(e, \phi(n)) = 1$.
+  \item Compute private exponent $d$ as the modular inverse of $e$ modulo $\phi(n)$.
+  \item Publish the public key $(e, n)$ and keep the private key $(d, n)$ secret.
+  \item To encrypt message $M$: compute $C = M^e \bmod n$.
+  \item To decrypt ciphertext $C$: compute $M = C^d \bmod n$.
+  \item Verify that the decrypted message matches the original plaintext.
+\end{enumerate}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class rsa {
+  private:
+    long long p, q, n, phi, e, d;
+    long long gcd(long long a, long long b) {
+      return b == 0 ? a : gcd(b, a % b);
+    }
+    long long modPow(long long base, long long exp, long long mod) {
+      long long result = 1;
+      base %= mod;
+      while (exp > 0) {
+        if (exp & 1) result = (__int128)result * base % mod;
+        base = (__int128)base * base % mod;
+        exp >>= 1;
+      }
+      return result;
+    }
+    long long modInverse(long long a, long long m) {
+      long long x0 = 1, x1 = 0, b = m;
+      while (b != 0) {
+        long long qt = a / b;
+        long long t = b;
+        b = a % b;
+        a = t;
+        t = x1;
+        x1 = x0 - qt * x1;
+        x0 = t;
+      }
+      return (x0 % m + m) % m;
+    }
+    bool isPrime(long long num) {
+      if (num < 2) return false;
+      for (long long i = 2; i * i <= num; i++)
+        if (num % i == 0) return false;
+      return true;
+    }
+  public:
+    rsa(long long primeP, long long primeQ);
+    long long encrypt(long long msg);
+    long long decrypt(long long cipher);
+};
+rsa::rsa(long long primeP, long long primeQ) {
+  p = primeP;
+  q = primeQ;
+  while (!isPrime(p) || !isPrime(q) || p == q) {
+    cout << "p and q must be distinct primes. Enter again: ";
+    cin >> p >> q;
+  }
+  n = p * q;
+  phi = (p - 1) * (q - 1);
+  e = 2;
+  while (e < phi && gcd(e, phi) != 1) e++;
+  d = modInverse(e, phi);
+  cout << "n   = " << n << endl;
+  cout << "phi = " << phi << endl;
+  cout << "Public Key  (e, n) = (" << e << ", " << n << ")" << endl;
+  cout << "Private Key (d, n) = (" << d << ", " << n << ")" << endl;
+}
+long long rsa::encrypt(long long msg) {
+  return modPow(msg, e, n);
+}
+long long rsa::decrypt(long long cipher) {
+  return modPow(cipher, d, n);
+}
+int main() {
+  cout << "Enter two prime numbers p and q: ";
+  long long p, q;
+  cin >> p >> q;
+  rsa cipher(p, q);
+
+  cout << "\nEnter plaintext message (integer < n): ";
+  long long msg;
+  cin >> msg;
+
+  long long cipherText = cipher.encrypt(msg);
+  cout << "Ciphertext = M^e mod n = " << cipherText << endl;
+
+  long long decrypted = cipher.decrypt(cipherText);
+  cout << "Decrypted  = C^d mod n = " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result - I/O}
+\begin{verbatim}
+Enter two prime numbers p and q: 23 97
+n   = 2231
+phi = 2112
+Public Key  (e, n) = (5, 2231)
+Private Key (d, n) = (845, 2231)
+
+Enter plaintext message (integer < n): 1024
+
+--- Encryption ---
+Ciphertext = M^e mod n = 1168
+
+--- Decryption ---
+Decrypted  = C^d mod n = 1024
+\end{verbatim}
+
+\section{Conclusion}
+The RSA cryptosystem was successfully implemented, covering key generation,
+encryption, and decryption via modular exponentiation and the extended Euclidean
+algorithm. The experiment validates RSA's core property that
+$(M^e)^d \equiv M \pmod{n}$. This implementation uses small values for
+demonstration; production RSA uses much larger primes and padding schemes.

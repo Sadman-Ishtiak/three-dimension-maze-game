@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{shirley_rtiow}
+P.~Shirley, T.~D. Black, and S.~Hollasch, ``Ray tracing in one weekend.''
+  \url{https://raytracing.github.io/books/RayTracingInOneWeekend.html}.
+\newblock Accessed: Nov. 15, 2026.
+
+\bibitem{sdlwiki}
+``{SDL} wiki: Simple directmedia layer documentation.''
+  \url{https://wiki.libsdl.org/}.
+\newblock Accessed: Nov. 15, 2026.
+
+\bibitem{amanatides1987fast}
+J.~Amanatides and A.~Woo, ``A fast voxel traversal algorithm for ray tracing,''
+  in {\em Proc. Eurographics '87}, pp.~3--10, 1987.
+
+\end{thebibliography}

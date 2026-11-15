@@ -1,0 +1,18 @@
+\chapter{Limitations and Conclusion}
+
+\section{Limitations}
+
+These points come from reading the source:
+\begin{enumerate}
+    \item \textbf{Mirrored view.} The camera's right vector is $(\sin\psi,-\cos\psi,0)$ while the map row index is used as $y$ and increases downward on the page, so the rendered maze is the mirror image of how \texttt{MAP} is written. The game stays consistent and solvable.
+    \item \textbf{Debug output.} Line 407 prints \texttt{dt} to the console every frame, before the clamp.
+    \item \textbf{Diagonal speed.} Forward and strafe input are not normalised together, so diagonal movement is $\sqrt2$ times faster.
+    \item \textbf{Plain materials and one thread.} Walls and ceiling are single colours with no textures, and all rays are traced on one thread.
+    \item \textbf{Fixed maze, abrupt ending.} There is one built-in maze, and reaching the exit only prints a message and closes the window.
+    \item \textbf{Portability.} \texttt{<bits/stdc++.h>} is a GCC header.
+\end{enumerate}
+Natural next steps are removing the debug print, normalising movement, splitting the image into bands for several threads, adding wall textures, and loading or generating mazes.
+
+\section{Conclusion}
+
+Maze Runner 3D renders a convincing first-person maze entirely on the CPU: unit rays from a pinhole camera, analytic floor and ceiling planes, a grid walk that returns the nearest wall, torch lighting with gamma encoding, circle-versus-square collision with wall sliding, and a breadth-first-search distance field that drives the hot/cold score. All objectives were met in 459 lines with SDL2 used only for display and input. The project shows that for grid-aligned scenes, ray casting needs no acceleration structures, shaders or image assets, and that the same grid also makes collision and shortest-distance computation short and exact.

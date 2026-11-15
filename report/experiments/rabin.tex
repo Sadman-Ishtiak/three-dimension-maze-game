@@ -1,0 +1,152 @@
+% Experiment 14: Design and Implementation of Rabin Cryptosystem
+\section{Theory}
+The Rabin cryptosystem is a public-key encryption scheme whose security is
+provably equivalent to the difficulty of integer factorization. Two large
+primes $p$ and $q$, both congruent to $3 \bmod 4$ (to simplify square-root
+computation), are chosen, and the public key is $n = p \times q$. The
+private key is the pair $(p, q)$. Encryption of a message $M$ is extremely
+simple:
+\[
+C = M^2 \bmod n
+\]
+Decryption computes modular square roots of $C$ modulo $p$ and $q$ separately,
+then combines them via the Chinese Remainder Theorem (CRT), yielding four
+candidate roots (since squaring is 2-to-1 modulo each prime). Redundancy
+added before encryption allows identifying the correct plaintext root.
+
+\section{Algorithm}
+\begin{enumerate}
+  \item Choose two distinct large primes $p$ and $q$, each congruent to $3 \bmod 4$.
+  \item Compute the public key $n = p \times q$.
+  \item To encrypt message $M$: compute $C = M^2 \bmod n$.
+  \item To decrypt ciphertext $C$: compute $m_p = C^{(p+1)/4} \bmod p$ and $m_q = C^{(q+1)/4} \bmod q$.
+  \item Use the Extended Euclidean Algorithm to find $y_p, y_q$ such that $y_p \cdot p + y_q \cdot q = 1$.
+  \item Combine using CRT to compute the four candidate roots $r_1, r_2, r_3, r_4$ modulo $n$.
+  \item Select the correct root using redundancy/padding information (or by inspection in this demonstration).
+  \item Verify that the correct root matches the original plaintext.
+\end{enumerate}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class rabin {
+  private:
+    long long p, q, n;
+    long long modPow(long long base, long long exp, long long mod) {
+      long long result = 1;
+      base %= mod;
+      while (exp > 0) {
+        if (exp & 1) result = (__int128)result * base % mod;
+        base = (__int128)base * base % mod;
+        exp >>= 1;
+      }
+      return result;
+    }
+    bool isPrime(long long num) {
+      if (num < 2) return false;
+      for (long long i = 2; i * i <= num; i++)
+        if (num % i == 0) return false;
+      return true;
+    }
+    long long extGCD(long long a, long long b, long long &x, long long &y) {
+      if (b == 0) { x = 1; y = 0; return a; }
+      long long x1, y1;
+      long long g = extGCD(b, a % b, x1, y1);
+      x = y1;
+      y = x1 - (a / b) * y1;
+      return g;
+    }
+  public:
+    rabin(long long primeP, long long primeQ);
+    long long encrypt(long long msg);
+    vector<long long> decrypt(long long cipher);
+};
+rabin::rabin(long long primeP, long long primeQ) {
+  p = primeP;
+  q = primeQ;
+  while (!isPrime(p) || !isPrime(q) || p % 4 != 3 || q % 4 != 3) {
+    cout << "p and q must be distinct primes with p, q = 3 (mod 4). Enter again: ";
+    cin >> p >> q;
+  }
+  n = p * q;
+  cout << "Public key  n = p*q = " << n << endl;
+  cout << "Private key (p, q) = (" << p << ", " << q << ")" << endl;
+}
+long long rabin::encrypt(long long msg) {
+  return (__int128)msg * msg % n;
+}
+vector<long long> rabin::decrypt(long long cipher) {
+  long long mp = modPow(cipher, (p + 1) / 4, p);
+  long long mq = modPow(cipher, (q + 1) / 4, q);
+  long long yp, yq;
+  extGCD(p, q, yp, yq);
+
+  long long r1 = ((yp * p % n) * mq % n + (yq * q % n) * mp % n) % n;
+  if (r1 < 0) r1 += n;
+  long long r2 = n - r1;
+
+  long long s1 = ((yp * p % n) * mq % n - (yq * q % n) * mp % n) % n;
+  if (s1 < 0) s1 += n;
+  long long s2 = n - s1;
+
+  return {r1, r2, s1, s2};
+}
+int main() {
+  cout << "Enter two primes p and q, both congruent to 3 mod 4: ";
+  long long p, q;
+  cin >> p >> q;
+  rabin cipher(p, q);
+
+  cout << "\nEnter plaintext message (integer < n): ";
+  long long msg;
+  cin >> msg;
+
+  long long cipherText = cipher.encrypt(msg);
+  cout << "\n--- Encryption ---" << endl;
+  cout << "Ciphertext C = M^2 mod n = " << cipherText << endl;
+
+  cout << "\n--- Decryption ---" << endl;
+  vector<long long> roots = cipher.decrypt(cipherText);
+  cout << "Four possible plaintext roots:" << endl;
+  for (int i = 0; i < 4; i++) cout << "  r" << i + 1 << " = " << roots[i] << endl;
+
+  bool found = find(roots.begin(), roots.end(), msg) != roots.end();
+  cout << "\nOriginal message was: " << msg << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+\begin{verbatim}
+Enter two primes p and q, both congruent to 3 mod 4: 7 11
+Public key  n = p*q = 77
+Private key (p, q) = (7, 11)
+
+Enter plaintext message (integer < n): 20
+
+--- Encryption ---
+Ciphertext C = M^2 mod n = 15
+
+--- Decryption ---
+Four possible plaintext roots:
+r1 = 64
+r2 = 13
+r3 = 20
+r4 = 57
+
+Original message was: 20
+\end{verbatim}
+
+\textbf{Observation:} With $p = 7$ and $q = 11$, both satisfying
+$p, q \equiv 3 \pmod 4$, the message $M = 20$ was encrypted to
+$C = 15$, and decryption correctly produced four candidate roots, one of
+which ($r_3 = 20$) matches the original plaintext. This confirms the
+4-to-1 nature of Rabin decryption.
+
+\section{Conclusion}
+The Rabin cryptosystem was implemented, illustrating its simple squaring-based
+encryption and CRT-based decryption. The main practical challenge is ciphertext
+ambiguity: without redundancy, the receiver cannot determine which root is
+correct. Despite this, Rabin's security proof (equivalence to integer
+factorization) makes it theoretically important.

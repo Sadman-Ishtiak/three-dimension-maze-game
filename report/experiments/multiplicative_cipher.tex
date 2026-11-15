@@ -1,0 +1,242 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+Multiplicative cipher is similar to additive cipher but multiplies plaintext characters by the key instead of adding. The result is taken modulo 26 to wrap around the alphabet. Decryption requires the multiplicative inverse of the key modulo 26. The key must be coprime to 26 (i.e., $\gcd(K, 26) = 1$) for an inverse to exist. Valid keys are: 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, or 25.
+
+The modular multiplicative inverse can be found by brute force: if $(a \cdot x) \mod 26 = 1$, then $\text{inverse}(a) = x$. More efficiently, we use the Extended Euclidean Algorithm:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    $a$ & $b$ & $r$ & $x$ & $y$ \\
+    \hline
+    11 & 26 & 15 & 1 & 0 \\
+    26 & 15 & 11 & 0 & 1 \\
+    15 & 11 & 4 & 1 & -1 \\
+    11 & 4 & 3 & -1 & 2 \\
+    4 & 3 & 1 & 2 & -5 \\
+    3 & 1 & 0 & -5 & 12 \\
+    \hline
+  \end{tabular}
+  \caption{Multiplicative inverse of 11 modulo 26 using Extended Euclidean Algorithm}
+\end{table}
+
+From the table, $-5$ is the inverse of 11 mod 26. Converting to positive: $-5 + 26 = 21$. Decryption multiplies ciphertext characters by the inverse modulo 26. The encryption and decryption formulas are:
+$$C = (P \cdot K) \mod 26$$
+and the decryption process is,
+
+$$P = (C \cdot K^{-1}) \mod 26$$
+
+where $C$ is the ciphertext character, $P$ is the plaintext character, $K$ is the key, and $K^{-1}$ is the multiplicative inverse of the key modulo 26.
+
+
+
+\section{Algorithm}
+The encryption algorithm for multiplicative cipher is,
+\begin{enumerate}
+  \item key := input key
+  \item plaintext := input plaintext
+  \item initialize empty string (\textbf{ans}) for ciphertext
+  \item for each character in plaintext do
+  \begin{enumerate}
+    \item compute encrypted value using formula
+    $$C = ((P - 'a') \cdot K) \mod 26 + 'a'$$ or
+    $$C = ((P - 'A') \cdot K) \mod 26 + 'A'$$ depending on whether the character is uppercase or lowercase.
+    \item $ans := ans + C$
+  \end{enumerate}
+  \item return ans
+\end{enumerate}
+The decryption algorithm for multiplicative cipher is,
+\begin{enumerate}
+  \item ciphertext := input ciphertext
+  \item compute multiplicative inverse of key modulo 26, using function $inv := \textbf{inv(key)}$
+  \item initialize empty string (\textbf{ans}) for plaintext
+  \item for each character in ciphertext do
+  \begin{enumerate}
+    \item compute decrypted value using formula
+    $$P = ((C - 'a') \cdot inv) \mod 26 + 'a'$$ or
+    $$P = ((C - 'A') \cdot inv) \mod 26 + 'A'$$ depending on whether the character is uppercase or lowercase.
+    \item $ans := ans + P$
+  \end{enumerate}
+  \item return ans
+\end{enumerate}
+
+% \section{Flowchart}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of start, xshift=-4cm] {Input Plaintext, Key};
+%     \node (initenc) [process, left=of inputtext] {$i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc) [process, right=of checkchar, xshift=2cm] {$char[i] := (char[i] \cdot k) \% 26$};
+%     % \node (nochange) [process, below=of checkchar] {Keep Unchanged};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Encrypted Text};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc.west);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc) -- (incenc);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Multiplicative Cipher Encryption}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of start, xshift=-4cm] {Input Ciphertext, Key};
+%     \node (initenc) [process, left=of inputtext] {$inv := inv(k)$, $i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc) [process, right=of checkchar, xshift=2cm] {$char[i] := (char[i] \cdot inv) \% 26$};
+%     % \node (nochange) [process, below=of checkchar] {Keep Unchanged};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Decrypted Text};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc.west);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc) -- (incenc);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Multiplicative Cipher Decryption}
+% \end{figure}
+
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+int extended_euclidian(int a, int b, int &x, int &y) {
+  if (b == 0) {
+    x = 1;
+    y = 0;
+    return a;
+  }
+  int x1, y1;
+  int d = extended_euclidian(b, a % b, x1, y1);
+  x = y1;
+  y = x1 - y1 * (a / b);
+  return d;
+}
+int inv(int a, int m = 26) {
+  int x, y;
+  int g = extended_euclidian(a, m, x, y);
+  if (g != 1) {
+    cout << "No solution!";
+    return -1;
+  }
+  else {
+    x = (x % m + m) % m;
+    return x;
+  }
+}
+class multiplicative {
+  private:
+    int key;
+  public:
+    multiplicative(int k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+multiplicative::multiplicative(int k) {
+  int tempk = k;
+  while (__gcd(26, tempk) != 1) {
+    cout << "Key is not coprime to 26. Enter a new key: ";
+    cin >> tempk;
+    cin.ignore();
+  }
+  key = tempk;
+}
+
+string multiplicative::encrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (((s[i] - 'a') * key) % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (((s[i] - 'A') * key) % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+string multiplicative::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  int inverse_key = inv(key);
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (((s[i] - 'a') * inverse_key) % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (((s[i] - 'A') * inverse_key) % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+int main() {
+  cout << "Enter a preffered key: ";
+  int n;
+  cin >> n;
+  cin.ignore();
+  cout << "Key is: " << n << endl;
+  multiplicative cipher(n);
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+
+\end{minted}
+
+\section{Result and Discussion - I/O}
+\begin{minted}{text}
+Enter a preffered key: 7
+Key is: 7
+Enter Plaintext : Sadman Ishtiak
+Encrypted text: Wavgan Ewxdeas
+Decrypted text: Sadman Ishtiak
+\end{minted}
+The program rejects keys not coprime to 26 and prompts for a new key:
+\begin{minted}{text}
+Enter a preffered key: 10
+Key is: 10
+Key is not coprime to 26. Enter a new key: 23
+Enter Plaintext : To be or not to be that is the question
+Encrypted text: Vk xo kb nkv vk xo vfav cy vfo esoyvckn
+Decrypted text: To be or not to be that is the question
+\end{minted}
+
+\section{Conclusion}
+The multiplicative cipher is more complex than additive cipher due to its use of modular multiplicative inverses, but it remains insecure for modern applications as it can be broken via frequency analysis or brute force. It serves as an educational tool for understanding modular arithmetic and multiplicative inverses, which are foundational to modern cryptography.

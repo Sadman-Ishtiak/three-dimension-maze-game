@@ -1,0 +1,7 @@
+\chapter{Conclusion}
+
+Maze Runner 3D demonstrates that a CPU-only ray caster can render a first-person maze at 60+ FPS on modest hardware. The key enablers are a constrained scene (axis-aligned unit cubes, two planes) and a 2D DDA that walks the grid in front-to-back order — the first wall hit is the visible surface, eliminating the need for acceleration structures or per-pixel sorting.
+
+The rendering pipeline fits in ~250 lines of C++20: ray generation, DDA traversal, plane intersection, Lambertian shading with a headlamp, and gamma correction. A BFS distance field from the exit drives a hot/cold HUD overlay. Collision uses a simple circle-vs-axis-aligned-box test with axis-separated commit for wall sliding.
+
+No GPU, no shaders, no BVH, no texture fetches — just scalar arithmetic and a linear frame buffer. The result is a playable, visually coherent 3D maze that validates the core insight: grid-aligned geometry + DDA = real-time ray casting on a single CPU core.

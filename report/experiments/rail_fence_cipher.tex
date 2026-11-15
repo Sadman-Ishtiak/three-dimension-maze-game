@@ -1,0 +1,130 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+The Rail Fence cipher is a simple keyless transposition cipher that writes the plaintext in a zigzag pattern across a fixed number of rows, then reads off each row to produce the ciphertext. For example, encrypting \textbf{"HELLO WORLD"} with 2 rails yields \textbf{"HLOOLELWRD"}.
+
+\section{Algorithm}
+The encryption algorithm for rail fence cipher is,
+\begin{enumerate}
+  \item set ans = empty string
+  \item n = length of cipher text
+  \item for i = 0 to n-1 do
+  \begin{enumerate}
+    \item if i is even then ans = ans + cipher[i/2]
+  \end{enumerate}
+  \item for i = 0 to n-1 do
+  \begin{enumerate}
+    \item if i is odd then ans = ans + cipher[n/2 + i/2]
+  \end{enumerate}
+  \item return ans
+\end{enumerate}
+The decryption algorithm for rail fence cipher is,
+\begin{enumerate}
+  \item set ans = cipher text
+  \item n = length of cipher text
+  \item for i = 0 to n-1 do
+  \begin{enumerate}
+    \item if i is even then ans[i] = cipher[i/2]
+    \item if i is odd then ans[i] = cipher[n/2 + i/2]
+  \end{enumerate}
+  \item return ans
+\end{enumerate}
+
+
+% \section{Flowchart (motherboard)}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, below=of start] {Input};
+%     \node (process1) [process, below=of input] {Process};
+%     \node (decision1) [decision, below=of process1, yshift=-0.2cm] {Condition?};
+%     \node (loopstep) [process, right=of decision1, xshift=1.2cm] {Update / Loop};
+%     \node (output) [io, below=of decision1, yshift=-0.3cm] {Output};
+%     \node (end) [terminator, below=of output] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (process1);
+%     \draw [line] (process1) -- (decision1);
+
+%     \draw [line] (decision1.east) -- node[above]{No} (loopstep.west);
+%     \draw [line] (loopstep.north) |- ([xshift=1.0cm]process1.east) |- (process1.east);
+
+%     \draw [line] (decision1) -- node[right]{Yes} (output);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart title}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+class rail {
+  public:
+    rail();
+    string encrypt(string s);
+    string decrypt(string s);
+};
+
+rail::rail() {
+}
+
+string rail::encrypt(string s) {
+  string ans;
+  int n = s.length();
+  if (n%2 == 1) {
+    s+=' ';
+    n++;
+  }
+  for (int i = 0; i < n; i+=2) {
+    ans+= s[i];
+  }
+  for (int i = 1; i < n; i+=2) {
+    ans += s[i];
+  }
+  return ans;
+}
+
+string rail::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (i%2 == 0) {
+      ans[i] = s[i/2];
+    } else {
+      ans[i] = s[n/2 + i/2];
+    }
+  }
+  return ans;
+}
+
+int main() {
+  rail cipher;
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+
+\end{minted}
+
+\section{Result and Discussion - I/O}
+\begin{minted}{text}
+Enter Plaintext : This is password
+Encrypted text: Ti spswrhsi asod
+Decrypted text: This is password
+\end{minted}
+
+
+\section{Conclusion}
+Rail fence cipher is a simple keyless transposition cipher that is easy to encrypt, decrypt, and break, making it a useful introduction to transposition ciphers.

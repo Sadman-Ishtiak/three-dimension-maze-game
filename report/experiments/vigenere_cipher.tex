@@ -1,0 +1,261 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+The Vigen\`ere cipher is a polyalphabetic substitution cipher that uses a string key converted to a list of integers (0--25). Each plaintext character is shifted by the corresponding key integer using modular addition.
+
+Encryption: $C_i = (P_i + K_{i \bmod m}) \bmod 26$, where $m$ is the key length. Decryption reverses this: $P_i = (C_i - K_{i \bmod m} + 26) \bmod 26$. For manual computation, a Vigen\`ere table (Tabula Recta) can be used, but the program computes the cipher directly using modular arithmetic.
+
+\section{Algorithm}
+Encryption Algorithm of Vigenere Cipher is,
+\begin{enumerate}
+  \item set mod := length(key)
+  \item set len := length(plaintext)
+  \item for i := 0 to len-1 do
+  \begin{enumerate}
+    \item if plaintext[i] is an uppercase letter then
+    \begin{enumerate}
+      \item cipher[i] := ((plaintext[i] - 'A') + key[i \% mod]) mod 26 + 'A'
+    \end{enumerate}
+    \item else if plaintext[i] is a lowercase letter then
+    \begin{enumerate}
+      \item cipher[i] := ((plaintext[i] - 'a') + key[i \% mod]) mod 26 + 'a'
+    \end{enumerate}
+    \item else
+    \begin{enumerate}
+      \item cipher[i] := plaintext[i]
+    \end{enumerate}
+  \end{enumerate}
+  \item return cipher;
+\end{enumerate}
+
+Decryption Algorithm of Vigenere Cipher is,
+\begin{enumerate}
+  \item set mod := length(key)
+  \item set len := length(ciphertext)
+  \item for i := 0 to len-1 do
+  \begin{enumerate}
+    \item if ciphertext[i] is an uppercase letter then
+    \begin{enumerate}
+      \item plaintext[i] := ((ciphertext[i] - 'A') - key[i \% mod] + 26) mod 26 + 'A'
+    \end{enumerate}
+    \item else if ciphertext[i] is a lowercase letter then
+    \begin{enumerate}
+      \item plaintext[i] := ((ciphertext[i] - 'a') - key[i \% mod] + 26) mod 26 + 'a'
+    \end{enumerate}
+    \item else
+    \begin{enumerate}
+      \item plaintext[i] := ciphertext[i]
+    \end{enumerate}
+  \end{enumerate}
+  \item return plaintext;
+\end{enumerate}
+
+% \section{Flowchart}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     % ---------- Encryption ----------
+%     \node (es)   [terminator]                         {Start};
+%     \node (ein)  [io,      right=2.2cm of es]         {Input plaintext, key};
+%     \node (ekey) [process, right=2.2cm of ein]        {Build key[],\; mod $\leftarrow$ length(key)};
+
+%     \node (einit) [process, below=1.7cm of es]        {$i \leftarrow 0,\; len \leftarrow$ length(plaintext)};
+%     \node (eloop) [decision,below=1.7cm of ein]       {$i < len$ ?};
+%     \node (eout)  [io,      below=1.7cm of ekey]      {Output cipher};
+
+%     \node (eupq)  [decision,below=1.8cm of ein,xshift=-2.2cm] {Uppercase?};
+%     \node (elowq) [decision,below=1.8cm of ein]              {Lowercase?};
+%     \node (ecopy) [process, below=1.8cm of ein,xshift= 2.2cm] {cipher[i] $\leftarrow$ plaintext[i]};
+
+%     \node (eup)   [process, below=1.8cm of eupq]      {cipher[i] $\leftarrow$ ((p[i]-`A') + key[i \% mod]) \% 26 + `A'};
+%     \node (elow)  [process, below=1.8cm of elowq]     {cipher[i] $\leftarrow$ ((p[i]-`a') + key[i \% mod]) \% 26 + `a'};
+%     \node (einc)  [process, below=1.8cm of ecopy]     {$i \leftarrow i+1$};
+
+%     \node (eret)  [process, below=1.8cm of eup]       {Return cipher};
+%     \node (eend)  [terminator, right=2.2cm of eret]   {End};
+%     \node (epad)  [process, right=2.2cm of eend]      {Encryption complete};
+
+%     % Main flow
+%     \draw [line] (es) -- (ein);
+%     \draw [line] (ein) -- (ekey);
+%     \draw [line] (ekey) |- (einit);
+%     \draw [line] (einit) -- (eloop);
+
+%     % Loop decision
+%     \draw [line] (eloop.east) -- node[above]{No} (eout.west);
+%     \draw [line] (eout) |- (eret);
+
+%     \draw [line] (eloop.south) -- node[right]{Yes} (elowq.north);
+%     \draw [line] (elowq.west) -- node[above]{No} (eupq.east);
+%     \draw [line] (elowq.east) -- node[above]{No} (ecopy.west);
+%     \draw [line] (elowq.south) -- node[right]{Yes} (elow.north);
+
+%     \draw [line] (eupq.south) -- node[right]{Yes} (eup.north);
+
+%     \draw [line] (eup.east) -- ++(0.9,0) |- (einc.west);
+%     \draw [line] (elow.east) -- ++(0.9,0) |- (einc.west);
+%     \draw [line] (ecopy.south) -- (einc.north);
+
+%     % Loop back (routed outside, no node crossing)
+%     \draw [line] (einc.east) -- ++(1.2,0) |- (eloop.east);
+
+%     % End path
+%     \draw [line] (eret) -- (eend);
+%     \draw [line] (eend) -- (epad);
+%   \end{autofitflowchart}
+%   \caption{Vigenere Cipher Encryption Flowchart}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     % ---------- Decryption ----------
+%     \node (ds)   [terminator]                         {Start};
+%     \node (din)  [io,      right=2.2cm of ds]         {Input ciphertext, key};
+%     \node (dkey) [process, right=2.2cm of din]        {Build key[],\; mod $\leftarrow$ length(key)};
+
+%     \node (dinit) [process, below=1.7cm of ds]        {$i \leftarrow 0,\; len \leftarrow$ length(ciphertext)};
+%     \node (dloop) [decision,below=1.7cm of din]       {$i < len$ ?};
+%     \node (dout)  [io,      below=1.7cm of dkey]      {Output plaintext};
+
+%     \node (dupq)  [decision,below=1.8cm of din,xshift=-2.2cm] {Uppercase?};
+%     \node (dlowq) [decision,below=1.8cm of din]              {Lowercase?};
+%     \node (dcopy) [process, below=1.8cm of din,xshift= 2.2cm] {plaintext[i] $\leftarrow$ ciphertext[i]};
+
+%     \node (dup)   [process, below=1.8cm of dupq]      {plaintext[i] $\leftarrow$ ((c[i]-`A') - key[i \% mod] + 26) \% 26 + `A'};
+%     \node (dlow)  [process, below=1.8cm of dlowq]     {plaintext[i] $\leftarrow$ ((c[i]-`a') - key[i \% mod] + 26) \% 26 + `a'};
+%     \node (dinc)  [process, below=1.8cm of dcopy]     {$i \leftarrow i+1$};
+
+%     \node (dret)  [process, below=1.8cm of dup]       {Return plaintext};
+%     \node (dend)  [terminator, right=2.2cm of dret]   {End};
+%     \node (dpad)  [process, right=2.2cm of dend]      {Decryption complete};
+
+%     % Main flow
+%     \draw [line] (ds) -- (din);
+%     \draw [line] (din) -- (dkey);
+%     \draw [line] (dkey) |- (dinit);
+%     \draw [line] (dinit) -- (dloop);
+
+%     % Loop decision
+%     \draw [line] (dloop.east) -- node[above]{No} (dout.west);
+%     \draw [line] (dout) |- (dret);
+
+%     \draw [line] (dloop.south) -- node[right]{Yes} (dlowq.north);
+%     \draw [line] (dlowq.west) -- node[above]{No} (dupq.east);
+%     \draw [line] (dlowq.east) -- node[above]{No} (dcopy.west);
+%     \draw [line] (dlowq.south) -- node[right]{Yes} (dlow.north);
+
+%     \draw [line] (dupq.south) -- node[right]{Yes} (dup.north);
+
+%     \draw [line] (dup.east) -- ++(0.9,0) |- (dinc.west);
+%     \draw [line] (dlow.east) -- ++(0.9,0) |- (dinc.west);
+%     \draw [line] (dcopy.south) -- (dinc.north);
+
+%     % Loop back (routed outside, no node crossing)
+%     \draw [line] (dinc.east) -- ++(1.2,0) |- (dloop.east);
+
+%     % End path
+%     \draw [line] (dret) -- (dend);
+%     \draw [line] (dend) -- (dpad);
+%   \end{autofitflowchart}
+%   \caption{Vigenere Cipher Decryption Flowchart}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class vigenere {
+  private:
+    string key_string;
+    vector<int> key;
+    int key_length;
+  public:
+    vigenere(string k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+vigenere::vigenere(string k) {
+  string key_string = k;
+  int ctr = 0;
+  key.resize(k.length());
+  for (int i = 0; i < k.length(); i++) {
+    if (isupper(k[i])) {
+      key[ctr] = k[i] - 'A';
+      ctr++;
+    }
+    if (islower(k[i])) {
+      key[ctr] = k[i] - 'a';
+      ctr++;
+    }
+  }
+  key_length = ctr;
+}
+string vigenere::encrypt(string s) {
+  string ans = s;
+  int len = s.length();
+  int key_index = 0;
+  for(int i = 0; i < len; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = ((s[i] - 'a') + key[key_index]) % 26 + 'a';
+      key_index = (key_index + 1) % key_length;
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = ((s[i] - 'A') + key[key_index]) % 26 + 'A';
+      key_index = (key_index + 1) % key_length;
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+string vigenere::decrypt(string s) {
+  string ans = s;
+  int len = s.length();
+  int key_index = 0;
+  for(int i = 0; i < len; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = ((s[i] - 'a') - key[key_index] + 26) % 26 + 'a';
+      key_index = (key_index + 1) % key_length;
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = ((s[i] - 'A') - key[key_index] + 26) % 26 + 'A';
+      key_index = (key_index + 1) % key_length;
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+int main() {
+  cout << "Enter a string(with no blank spaces) key: ";
+  string s;
+  cin >> s;
+  cin.ignore();
+  cout << "Key is: " << s << endl;
+  vigenere cipher(s);
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+The key is directly converted so no non-alphabetic characters are allowed.
+\begin{minted}{text}
+Enter a string(with no blank spaces) key: Thisisthekey
+Key is: Thisisthekey
+Enter Plaintext : Sadman Ishtiak
+Encrypted text: Lhleif Bzldmyd
+Decrypted text: Sadman Ishtiak
+\end{minted}
+
+\section{Conclusion}
+The Vigen\`ere cipher improves on additive ciphers by using a repeating string key to vary the shift per character. It is still vulnerable to frequency analysis with enough ciphertext, but effectively demonstrates the concept of polyalphabetic encryption.

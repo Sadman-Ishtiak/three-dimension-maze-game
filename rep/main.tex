@@ -1,0 +1,114 @@
+\documentclass[a4paper,11pt,oneside]{report}
+\usepackage[top=2.2cm, bottom=2cm, left=2.3cm, right=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{fvextra}
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{tocloft}
+\usepackage{caption}
+\usepackage{cite}
+\usepackage[nottoc,notlof,notlot]{tocbibind}
+\usepackage{float}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage[hidelinks,plainpages=false,pdfpagelabels]{hyperref}
+\setlength{\emergencystretch}{3em}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,shapes.misc,calc}
+
+% ---------- flowchart styles ----------
+\tikzset{
+  term/.style={rounded rectangle, draw=black, align=center, font=\small,
+               inner sep=3pt, minimum height=0.7cm, text width=6.2cm},
+  block/.style={rectangle, draw=black, align=center, font=\small,
+                inner sep=3pt, minimum height=0.7cm, text width=7.2cm},
+  dec/.style={diamond, draw=black, aspect=3.2, align=center, font=\small,
+              inner sep=1pt, text width=3.2cm},
+  arr/.style={-{Stealth[length=2mm]}, thick}
+}
+
+% ---------- minted defaults ----------
+\setminted{style=tango, linenos, breaklines, autogobble, fontsize=\scriptsize,
+           frame=lines, framesep=1mm, numbersep=6pt}
+% \srcexcerpt{first line}{last line}  -> lines of code/main.cpp, original line numbers kept
+\newcommand{\srcexcerpt}[2]{%
+  \inputminted[firstline=#1,lastline=#2,firstnumber=#1]{cpp}{code/main.cpp}}
+\newcommand{\srccaption}[1]{\par\smallskip\noindent\textbf{\small #1}\par\nobreak}
+
+% ---------- chapter formatting ----------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\LARGE}
+  {\chaptertitlename\ \thechapter}
+  {4pt}
+  {}
+\titlespacing{\chapter}{0pt}{-25pt}{12pt}
+\renewcommand{\bibname}{References}
+\renewcommand{\contentsname}{Table of Contents}
+\captionsetup{font=small,labelfont=bf}
+
+% ---------- metadata ----------
+\newcommand{\studentname}{Sadman Ishtiak}
+\newcommand{\course}{CSE-428: Computer Graphics Lab}
+\newcommand{\institute}{Jatiya Kabi Kazi Nazrul Islam University}
+\newcommand{\supervisor}{Dr. Habiba Sultana}
+\newcommand{\supervisordesignation}{Associate Professor}
+\newcommand{\studentdetails}{Session: 2021--22\\ Roll: 22102009 \\ Reg: 10815}
+\newcommand{\reportdate}{November 15, 2026}
+\title{Maze Runner 3D}
+\author{\studentname}
+\date{\reportdate}
+
+\let\cleardoublepage\clearpage
+\begin{document}
+
+% ---------- title page ----------
+\begin{titlepage}
+  \centering
+  \includegraphics[width=0.2\textwidth]{images/Jatiya_Kabi_Kazi_Nazrul_Islam_University_Logo.png}\\[0.4cm]
+  {\LARGE\bfseries \institute}\\[3pt]
+  {\large Trishal, Mymensingh}\\[0.5cm]
+  {\Large\bfseries Department of Computer Science and Engineering}
+  \vfill
+  {\Large Technical Report on}\\[0.3cm]
+  {\Huge\bfseries Maze Runner 3D}\\[0.3cm]
+  {\large}\\[0.5cm]
+  {\LARGE\bfseries \course}
+  \vfill
+  {\Large\bfseries Submitted To}\\[0.2cm]
+  {\Large \supervisor}\\
+  {\large \supervisordesignation}\\
+  {\large Department of Computer Science and Engineering}\\
+  {\large \institute}
+  \vfill
+  {\Large\bfseries Submitted By}\\[0.2cm]
+  {\Large \studentname}\\
+  {\large \studentdetails}
+  \vfill
+  {\large Submission Date: \reportdate}
+\end{titlepage}
+
+% ---------- front matter ----------
+\pagenumbering{Roman}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+% ---------- chapters ----------
+\input{sections/01_introduction}
+\input{sections/02_methodology}
+\input{sections/03_implementation}
+\input{sections/04_results}
+\input{sections/05_conclusion}
+
+% ---------- references ----------
+\clearpage
+\bibliographystyle{ieeetr}
+\bibliography{reference/reference}
+
+\end{document}

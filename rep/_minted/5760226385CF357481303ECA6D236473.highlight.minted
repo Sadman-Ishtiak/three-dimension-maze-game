@@ -1,0 +1,461 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}SDL2/SDL.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}bits/stdc++.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{define PI 3.14159265358979323846}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{std}\PYG{p}{;}
+
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{16}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}H}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{16}\PYG{p}{;}
+
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{char}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAP}\PYG{p}{[}\PYG{n}{MAZE\PYGZus{}H}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}S....\PYGZsh{}........\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}...\PYGZsh{}.\PYGZsh{}......\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}.\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}...\PYGZsh{}.\PYGZsh{}.\PYGZsh{}....\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}.\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}...\PYGZsh{}.\PYGZsh{}......\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}...E.\PYGZsh{}.\PYGZsh{}....\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.........\PYGZsh{}....\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}.\PYGZsh{}\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}.\PYGZsh{}..........\PYGZsh{}.\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}...\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}......\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+
+\PYG{c+c1}{// Global variables and constant definition area}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{       }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{    }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{640}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{       }\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{+w}{   }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{480}\PYG{p}{;}
+\PYG{c+c1}{// World convention (declared once, per the ceiling rule): paper axes x/y =}
+\PYG{c+c1}{// ground plane (\PYGZdq{}xy\PYGZdq{} = the map you\PYGZsq{}d draw on paper); z = height/gravity.}
+\PYG{c+c1}{// Everything below reads with that meaning: floor plane z = 0, eye at z = EYE\PYGZus{}HEIGHT.}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{EYE\PYGZus{}HEIGHT}\PYG{+w}{      }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// camera height: middle of a 1\PYGZhy{}unit wall}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{FOV\PYGZus{}DEG}\PYG{+w}{         }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{75.0}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{MOVE\PYGZus{}SPD}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// units per second (ground speed)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{TURN\PYGZus{}SPD}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.5}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// radians per second (turning speed)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{CAPS\PYGZus{}MULTIPLIER}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.5}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{WALL\PYGZus{}H}\PYG{+w}{          }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// each \PYGZsq{}\PYGZsh{}\PYGZsq{} is a unit cube: z in [0,1], filling one map cell}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{PLAYER\PYGZus{}R}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.28}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// player collision radius (corridor is 1.0 wide)}
+
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{is\PYGZus{}wall}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cx}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cy}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}H}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// outside = solid}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{MAP}\PYG{p}{[}\PYG{n}{cy}\PYG{p}{]}\PYG{p}{[}\PYG{n}{cx}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}}\PYG{l+s+sc}{\PYGZsh{}}\PYG{l+s+sc}{\PYGZsq{}}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// rows are the y axis (the ground\PYGZsq{}s second axis)}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} exit markers and walking distance \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{// \PYGZsq{}S\PYGZsq{}/\PYGZsq{}E\PYGZsq{} are found once in main(). The row index is world y in this z\PYGZhy{}up}
+\PYG{c+c1}{// file, so it is named \PYGZus{}z here to match the rest of the file\PYGZsq{}s map talk.}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{  }\PYG{n}{start\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{start\PYGZus{}z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// \PYGZsq{}S\PYGZsq{} cell}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{  }\PYG{n}{exit\PYGZus{}x}\PYG{+w}{  }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// \PYGZsq{}E\PYGZsq{} cell}
+\PYG{k}{static}\PYG{+w}{ }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// BFS distance to the exit cell}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{  }\PYG{n}{max\PYGZus{}dist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+
+\PYG{c+c1}{// BFS from the exit over floor cells: true walking distance, so a wall}
+\PYG{c+c1}{// between you and the exit counts (a straight line would lie). The vector}
+\PYG{c+c1}{// doubles as the queue: it grows while h walks it, so no pop\PYGZus{}front needed.}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{build\PYGZus{}exit\PYGZus{}dist}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{.}\PYG{n}{assign}\PYG{p}{(}\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}H}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{q}\PYG{p}{\PYGZob{}}\PYG{n}{exit\PYGZus{}z}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}x}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{size\PYGZus{}t}\PYG{+w}{ }\PYG{n}{h}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{h}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{q}\PYG{p}{.}\PYG{n}{size}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{h}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{q}\PYG{p}{[}\PYG{n}{h}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{dx}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{dy}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{k}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{k}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{4}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{k}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{nx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{dx}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ny}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{dy}\PYG{p}{[}\PYG{n}{k}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{is\PYGZus{}wall}\PYG{p}{(}\PYG{n}{nx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ny}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{n}{ny}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{nx}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{continue}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{n}{ny}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{nx}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{n}{c}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{q}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{ny}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{nx}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{d}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{d}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{vec3}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{vec3}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{vec3}\PYG{p}{(}\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{e0}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{e1}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{e2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{\PYGZob{}}\PYG{n}{e0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{e2}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{k}{operator}\PYG{p}{[}\PYG{p}{]}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{e}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{length}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{+}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{+}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{+}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{+}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{\PYGZhy{}}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{\PYGZhy{}}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{*}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{*}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{*}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{/}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{o}{/}\PYG{n}{t}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dot}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{cross}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{a}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{a}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{n}{b}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{unit\PYGZus{}vector}\PYG{p}{(}\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{a}\PYG{o}{/}\PYG{n}{a}\PYG{p}{.}\PYG{n}{length}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{ray}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{public}\PYG{o}{:}\PYG{+w}{     }\PYG{c+c1}{// default for struct}
+\PYG{+w}{        }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{origin}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{direction}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{ray}\PYG{p}{(}\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{o}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{d}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{origin}\PYG{p}{(}\PYG{n}{o}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{direction}\PYG{p}{(}\PYG{n}{d}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{at}\PYG{p}{(}\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{origin}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{direction}\PYG{o}{*}\PYG{n}{t}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{hit\PYGZus{}record}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1e30}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{hit\PYGZus{}point}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{normal}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{material\PYGZus{}color}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{c+c1}{// +1.0 = standing on the exit, \PYGZhy{}1.0 = farthest reachable cell.}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n+nf}{temperature}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// row = world y}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{d}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{p}{;}\PYG{+w}{                                  }\PYG{c+c1}{// unreachable = coldest}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Floor material: checkerboard over the GROUND plane (x, y). Pattern keys off}
+\PYG{c+c1}{// the two in\PYGZhy{}plane coordinates; z is altitude here and never varies on the floor.}
+\PYG{n}{vec3}\PYG{+w}{ }\PYG{n+nf}{floor\PYGZus{}color\PYGZus{}at}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{point}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{point}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{point}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}x}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}z}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.20}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.85}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.30}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// the exit tile}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{is\PYGZus{}light\PYGZus{}tile}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{(}\PYG{n}{grid\PYGZus{}x}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{grid\PYGZus{}y}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZpc{}}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{is\PYGZus{}light\PYGZus{}tile}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.60}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.58}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.55}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// light gray}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.30}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.30}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.33}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// dark gray}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{n}{hit\PYGZus{}record}\PYG{+w}{ }\PYG{n+nf}{cast\PYGZus{}ray}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{ray}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{hit\PYGZus{}record}\PYG{+w}{ }\PYG{n}{best}\PYG{p}{;}\PYG{+w}{                        }\PYG{c+c1}{// ray\PYGZus{}t = 1e30: \PYGZdq{}no hit yet\PYGZdq{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} planes (moved verbatim from render(); only the names change) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mf}{\PYGZhy{}1e\PYGZhy{}9}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{          }\PYG{c+c1}{// aims down \PYGZhy{}\PYGZgt{} floor plane z = 0}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{t}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{normal}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// floor faces up}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{floor\PYGZus{}color\PYGZus{}at}\PYG{p}{(}\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}9}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{    }\PYG{c+c1}{// aims up \PYGZhy{}\PYGZgt{} ceiling plane z = WALL\PYGZus{}H}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{WALL\PYGZus{}H}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{t}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{normal}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// ceiling faces down}
+\PYG{+w}{            }\PYG{n}{best}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.22}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.22}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.26}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t\PYGZus{}plane}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// walls must beat this distance or lose}
+
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} 2D DDA walk: march through maze cells, nearest\PYGZhy{}face\PYGZhy{}first \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{c+c1}{// Start cell: the ray origin\PYGZsq{}s cell on the ground grid.}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Step signs: which horizontal direction we move per axis.}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{sx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{sy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Cost to cross ONE full cell per axis, in t\PYGZhy{}units. Ray is unit:}
+\PYG{+w}{    }\PYG{c+c1}{// filling one cell of x needs |1/dir.x| t\PYGZhy{}units.}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dtx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{abs}\PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dty}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{abs}\PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{// Time of FIRST gridline crossing per axis:}
+\PYG{+w}{    }\PYG{c+c1}{// (distance from origin to that boundary, in this axis\PYGZsq{}s units) * cost.}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{sx}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{cx}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dtx}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{ty}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{sy}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{cy}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dty}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// when we entered the CURRENT cell}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{entry\PYGZus{}axis}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// 0 = came in through an x\PYGZhy{}face, 1 = through a y\PYGZhy{}face}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{256}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{t\PYGZus{}plane}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{   }\PYG{c+c1}{// bounded, and can\PYGZsq{}t beat planes}
+\PYG{+w}{        }\PYG{c+c1}{// Entering a wall cell through a face: that face IS the visible surface.}
+\PYG{+w}{        }\PYG{c+c1}{// Gate: the cube only spans z in [0, WALL\PYGZus{}H] \PYGZhy{}\PYGZhy{} check ray altitude at entry.}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{entry\PYGZus{}axis}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{is\PYGZus{}wall}\PYG{p}{(}\PYG{n}{cx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cy}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{z\PYGZus{}at}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{z\PYGZus{}at}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{z\PYGZus{}at}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{WALL\PYGZus{}H}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{+w}{          }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{+w}{      }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{t\PYGZus{}entry}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{best}\PYG{p}{.}\PYG{n}{normal}\PYG{+w}{         }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{entry\PYGZus{}axis}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{sx}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{n}{sy}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{best}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.55}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.47}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.40}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// tan, shading later}
+\PYG{+w}{                }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{best}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// first wall hit wins: nearest surface, early exit}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{c+c1}{// advance: cross whichever gridline comes FIRST (smaller time),}
+\PYG{+w}{        }\PYG{c+c1}{// pay one full cell of cost on that axis, remember the entry face.}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{ty}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tx}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{tx}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dtx}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{sx}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{entry\PYGZus{}axis}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{k}{else}\PYG{+w}{         }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{t\PYGZus{}entry}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ty}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{ty}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dty}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{sy}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{entry\PYGZus{}axis}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{best}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Lambertian shading with a torch carried at the eye. No shadow rays:}
+\PYG{c+c1}{// the light sits where the camera is, so every visible point is lit.}
+\PYG{n}{vec3}\PYG{+w}{ }\PYG{n+nf}{shade}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{hit\PYGZus{}record}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{eye}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{to\PYGZus{}light}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{eye}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{p}{;}\PYG{+w}{              }\PYG{c+c1}{// surface \PYGZhy{}\PYGZgt{} torch}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{d2}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dot}\PYG{p}{(}\PYG{n}{to\PYGZus{}light}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{to\PYGZus{}light}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// squared distance}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{max}\PYG{p}{(}\PYG{n}{dot}\PYG{p}{(}\PYG{n}{h}\PYG{p}{.}\PYG{n}{normal}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{unit\PYGZus{}vector}\PYG{p}{(}\PYG{n}{to\PYGZus{}light}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// Lambert cosine}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{atten}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mf}{0.9}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{0.30}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{d2}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{         }\PYG{c+c1}{// distance falloff}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{lit}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.14}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.14}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.18}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{          }\PYG{c+c1}{// ambient}
+\PYG{+w}{                                   }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{1.7}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.45}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.10}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{atten}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// warm torch}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{lit}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{lit}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{lit}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// gamma 2.0 encode}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{collides}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// The player\PYGZsq{}s altitude is fixed at EYE\PYGZus{}HEIGHT, always inside a wall\PYGZsq{}s}
+\PYG{+w}{    }\PYG{c+c1}{// z range, so only the ground footprint can collide: circle vs square.}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x0}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{x1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{y0}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{y1}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{y0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{y1}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cy}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x1}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{cx}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{is\PYGZus{}wall}\PYG{p}{(}\PYG{n}{cx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cy}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{continue}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{c+c1}{// Closest point on this square to the circle center:}
+\PYG{+w}{            }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dx}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{double}\PYG{p}{)}\PYG{n}{cx}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dy}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{double}\PYG{p}{)}\PYG{n}{cy}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{c+c1}{// Compare squared distance to squared radius: no sqrt.}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{dx}\PYG{o}{*}\PYG{n}{dx}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{dy}\PYG{o}{*}\PYG{n}{dy}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{PLAYER\PYGZus{}R}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{false}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{render}\PYG{p}{(}\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{Uint32}\PYG{o}{\PYGZgt{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{buf}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{eye}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{yaw}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// camera basis \PYGZhy{}\PYGZhy{} once per FRAME, not per\PYGZhy{}pixel}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{half\PYGZus{}w}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{tan}\PYG{p}{(}\PYG{n}{FOV\PYGZus{}DEG}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{PI}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mf}{360.0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{half\PYGZus{}h}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{half\PYGZus{}w}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// aspect\PYGZhy{}corrected}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{forward}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{yaw}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{sin}\PYG{p}{(}\PYG{n}{yaw}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// forward: flat along ground plane}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{   }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cross}\PYG{p}{(}\PYG{n}{forward}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// F x UP(z) = right\PYGZhy{}hand rule}
+\PYG{+w}{    }\PYG{c+c1}{// NOTE: c.y() below is the GREEN channel of a color \PYGZhy{}\PYGZhy{} harmless shadowing of}
+\PYG{+w}{    }\PYG{c+c1}{// the altitude axis; the two live in different structs.}
+
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{j}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{j}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{j}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{v}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{o}{*}\PYG{p}{(}\PYG{n}{j}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{)}\PYG{o}{/}\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{half\PYGZus{}h}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{u}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mf}{2.0}\PYG{o}{*}\PYG{p}{(}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{)}\PYG{o}{/}\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{half\PYGZus{}w}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{ray}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{(}\PYG{n}{eye}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{unit\PYGZus{}vector}\PYG{p}{(}\PYG{n}{forward}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{u}\PYG{o}{*}\PYG{n}{right}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{v}\PYG{o}{*}\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{hit\PYGZus{}record}\PYG{+w}{ }\PYG{n}{h}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cast\PYGZus{}ray}\PYG{p}{(}\PYG{n}{r}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{shade}\PYG{p}{(}\PYG{n}{h}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{eye}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{            }\PYG{n}{Uint8}\PYG{+w}{ }\PYG{n}{r8}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mf}{255.99}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{g8}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mf}{255.99}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                  }\PYG{n}{b8}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{o}{*}\PYG{l+m+mf}{255.99}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{buf}\PYG{p}{[}\PYG{p}{(}\PYG{k+kt}{size\PYGZus{}t}\PYG{p}{)}\PYG{n}{j}\PYG{o}{*}\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{i}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{l+m+mi}{255u}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{24}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r8}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{16}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{g8}\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{8}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{b8}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// advance the player state by one frame\PYGZsq{}s worth of input}
+\PYG{c+c1}{// mutates only pos.x/y and yaw; z (altitude) is constant in this game}
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{update}\PYG{p}{(}\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{yaw}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{Uint8}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{keys}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// turning: left/right votes \PYGZhy{}\PYGZgt{} continuous intent * TURN\PYGZus{}SPD * dt}
+\PYG{+w}{    }\PYG{n}{yaw}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}LEFT}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}
+\PYG{+w}{            }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}RIGHT}\PYG{p}{]}\PYG{+w}{  }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{TURN\PYGZus{}SPD}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// frame basis, computed fresh here (never shared with render())}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{forward}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{yaw}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{sin}\PYG{p}{(}\PYG{n}{yaw}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// flat in ground x/y}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{   }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cross}\PYG{p}{(}\PYG{n}{forward}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// UP is +z (z\PYGZhy{}up convention)}
+
+\PYG{+w}{    }\PYG{c+c1}{// intent: two votes (walk, strafe). Arrow up/down work like W/S.}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{fwd}\PYG{+w}{  }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}W}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}S}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}
+\PYG{+w}{                }\PYG{o}{+}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}UP}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}DOWN}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{fwd}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{clamp}\PYG{p}{(}\PYG{n}{fwd}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{\PYGZhy{}1.0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{side}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}D}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}A}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{is\PYGZus{}fast}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}LSHIFT}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{keys}\PYG{p}{[}\PYG{n}{SDL\PYGZus{}SCANCODE\PYGZus{}RSHIFT}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{SDL\PYGZus{}GetModState}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{KMOD\PYGZus{}CAPS}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{current\PYGZus{}speed}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{is\PYGZus{}fast}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{MOVE\PYGZus{}SPD}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{CAPS\PYGZus{}MULTIPLIER}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{MOVE\PYGZus{}SPD}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{step}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{forward}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{fwd}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{side}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{current\PYGZus{}speed}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// Slide along walls: try each ground axis independently, commit only}
+\PYG{+w}{    }\PYG{c+c1}{// if the candidate position is free. Blocked x still lets y move.}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{candidate}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{step}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{collides}\PYG{p}{(}\PYG{n}{candidate}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{candidate}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{step}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{collides}\PYG{p}{(}\PYG{n}{candidate}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+
+\PYG{k+kt}{int32\PYGZus{}t}\PYG{+w}{ }\PYG{n+nf}{main}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{c+c1}{// defining the screen buffer variables}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{Uint32}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{buffer}\PYG{p}{(}\PYG{p}{(}\PYG{k+kt}{size\PYGZus{}t}\PYG{p}{)}\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{o}{*}\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{Uint32}\PYG{+w}{ }\PYG{n}{pitch}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{o}{*}\PYG{k}{sizeof}\PYG{p}{(}\PYG{n}{Uint32}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 1. Initialize SDL}
+\PYG{+w}{    }\PYG{c+c1}{// Windows builds define SDL\PYGZus{}MAIN\PYGZus{}HANDLED, so SDL must be told main() is ready.}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}SetMainReady}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{SDL\PYGZus{}Init}\PYG{p}{(}\PYG{n}{SDL\PYGZus{}INIT\PYGZus{}VIDEO}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{SDL could not initialize! SDL\PYGZus{}Error: \PYGZpc{}s}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetError}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// 2. Create the window}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}Window}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{window}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}CreateWindow}\PYG{p}{(}
+\PYG{+w}{        }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Maze Runner 3D}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{            }\PYG{c+c1}{// Window title}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}WINDOWPOS\PYGZus{}CENTERED}\PYG{p}{,}\PYG{+w}{      }\PYG{c+c1}{// Initial x position}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}WINDOWPOS\PYGZus{}CENTERED}\PYG{p}{,}\PYG{+w}{      }\PYG{c+c1}{// Initial y position}
+\PYG{+w}{        }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{p}{,}\PYG{+w}{                }\PYG{c+c1}{// Width, in pixels}
+\PYG{+w}{        }\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{p}{,}\PYG{+w}{               }\PYG{c+c1}{// Height, in pixels}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}WINDOW\PYGZus{}SHOWN}\PYG{+w}{             }\PYG{c+c1}{// Flags (makes it visible)}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{window}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Window could not be created! SDL\PYGZus{}Error: \PYGZpc{}s}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetError}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}Quit}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}Renderer}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{renderer}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}CreateRenderer}\PYG{p}{(}\PYG{n}{window}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}RENDERER\PYGZus{}ACCELERATED}\PYG{+w}{ }\PYG{o}{|}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}RENDERER\PYGZus{}PRESENTVSYNC}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{renderer}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{renderer}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}CreateRenderer}\PYG{p}{(}\PYG{n}{window}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{renderer}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Renderer could not be created! SDL\PYGZus{}Error: \PYGZpc{}s}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetError}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}DestroyWindow}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}Quit}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}Texture}\PYG{+w}{ }\PYG{o}{*}\PYG{n}{texture}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}CreateTexture}\PYG{p}{(}
+\PYG{+w}{        }\PYG{n}{renderer}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}PIXELFORMAT\PYGZus{}ARGB8888}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}TEXTUREACCESS\PYGZus{}STREAMING}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{SCREEN\PYGZus{}HEIGHT}
+\PYG{+w}{    }\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{texture}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Texture could not be created! SDL\PYGZus{}Error: \PYGZpc{}s}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetError}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}DestroyRenderer}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}DestroyWindow}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}Quit}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} Player state: find maze markers, spawn mid\PYGZhy{}cell \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{    }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{z}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}H}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{z}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{x}\PYG{o}{+}\PYG{o}{+}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{MAP}\PYG{p}{[}\PYG{n}{z}\PYG{p}{]}\PYG{p}{[}\PYG{n}{x}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}}\PYG{l+s+sc}{S}\PYG{l+s+sc}{\PYGZsq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{start\PYGZus{}x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{start\PYGZus{}z}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{z}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{MAP}\PYG{p}{[}\PYG{n}{z}\PYG{p}{]}\PYG{p}{[}\PYG{n}{x}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}}\PYG{l+s+sc}{E}\PYG{l+s+sc}{\PYGZsq{}}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}x}\PYG{+w}{  }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}z}\PYG{+w}{  }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{z}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{build\PYGZus{}exit\PYGZus{}dist}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{(}\PYG{n}{start\PYGZus{}x}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{start\PYGZus{}z}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{EYE\PYGZus{}HEIGHT}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// cell center horizontally, eye mid\PYGZhy{}height}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{yaw}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{p}{;}\PYG{+w}{                                    }\PYG{c+c1}{// facing +x}
+
+\PYG{+w}{    }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Find the green exit tile!}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{           }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Controls: WASD or Up/Down move, A/D strafe, Left/Right turn.}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{           }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Hold Shift or CapsLock to sprint \PYGZpc{}.1fx. Esc quits.}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{           }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Hot/cold score (+1 at exit, \PYGZhy{}1 farthest) is in the title bar.}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{           }\PYG{n}{CAPS\PYGZus{}MULTIPLIER}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 3. Main event loop setup}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}Event}\PYG{+w}{ }\PYG{n}{event}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{quit}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{false}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{won}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{false}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{start\PYGZus{}time}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetTicks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{Uint32}\PYG{+w}{ }\PYG{n}{last}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetTicks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// frame clock: for dt}
+
+\PYG{+w}{    }\PYG{c+c1}{// Keep the window open until the user closes it}
+\PYG{+w}{    }\PYG{k}{while}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{quit}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// Poll for pending events (clicks, keypresses, window close)}
+\PYG{+w}{        }\PYG{k}{while}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{SDL\PYGZus{}PollEvent}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{event}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{!}\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// User requests quit (e.g., clicking the \PYGZsq{}X\PYGZsq{} button)}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{event}\PYG{p}{.}\PYG{n}{type}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}QUIT}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}
+\PYG{+w}{                }\PYG{p}{(}\PYG{n}{event}\PYG{p}{.}\PYG{n}{type}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}KEYDOWN}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{event}\PYG{p}{.}\PYG{n}{key}\PYG{p}{.}\PYG{n}{keysym}\PYG{p}{.}\PYG{n}{sym}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDLK\PYGZus{}ESCAPE}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{quit}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} advance the world: frame clock, then state update \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{        }\PYG{n}{Uint32}\PYG{+w}{ }\PYG{n}{now\PYGZus{}frame}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetTicks}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{now\PYGZus{}frame}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{last}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mf}{1000.0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{cout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{dt = }\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{last}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{now\PYGZus{}frame}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{0.05}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{dt}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.05}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// clamp: a frozen frame can\PYGZsq{}t teleport the player}
+\PYG{+w}{        }\PYG{n}{update}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yaw}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{dt}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetKeyboardState}\PYG{p}{(}\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// win when your cell IS the exit cell}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}x}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{floor}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}z}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{won}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{quit}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{c+c1}{// hot/cold score: +1 = on the exit, \PYGZhy{}1 = farthest reachable cell}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{temp}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{temperature}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{char}\PYG{o}{*}\PYG{+w}{ }\PYG{n}{feel}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{temp}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{HOT}\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{temp}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{0.0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{WARM}\PYG{l+s}{\PYGZdq{}}
+\PYG{+w}{                         }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{temp}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{\PYGZhy{}0.5}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{COOL}\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{COLD}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{char}\PYG{+w}{ }\PYG{n}{title}\PYG{p}{[}\PYG{l+m+mi}{64}\PYG{p}{]}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{snprintf}\PYG{p}{(}\PYG{n}{title}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{sizeof}\PYG{+w}{ }\PYG{n}{title}\PYG{p}{,}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Maze Runner 3D  |  Score \PYGZpc{}+.2f  \PYGZpc{}s}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{temp}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{feel}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}SetWindowTitle}\PYG{p}{(}\PYG{n}{window}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{title}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} Render this frame \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{        }\PYG{n}{render}\PYG{p}{(}\PYG{n}{buffer}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{EYE\PYGZus{}HEIGHT}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yaw}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{} Present: buffer \PYGZhy{}\PYGZgt{} texture \PYGZhy{}\PYGZgt{} composed frame \PYGZhy{}\PYGZgt{} visible \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}UpdateTexture}\PYG{p}{(}\PYG{n}{texture}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{buffer}\PYG{p}{.}\PYG{n}{data}\PYG{p}{(}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pitch}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// CPU pixels \PYGZhy{}\PYGZgt{} GPU texture}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}RenderCopy}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{texture}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{,}\PYG{+w}{ }\PYG{n+nb}{NULL}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{          }\PYG{c+c1}{// queue full\PYGZhy{}frame blit}
+
+\PYG{+w}{        }\PYG{c+c1}{// temperature bar: blue (cold) on the left \PYGZhy{}\PYGZgt{} red (hot) on the right.}
+\PYG{+w}{        }\PYG{c+c1}{// Drawn on the renderer AFTER the 3D texture, so it sits on top.}
+\PYG{+w}{        }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{f}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{temp}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}SetRenderDrawColor}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{20}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{24}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{30}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{255}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}Rect}\PYG{+w}{ }\PYG{n}{bg}\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{16}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{12}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{32}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{10}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}RenderFillRect}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{bg}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}SetRenderDrawColor}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{l+m+mi}{60}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{195}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{f}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{l+m+mi}{120}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{60}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{f}\PYG{p}{)}\PYG{p}{,}
+\PYG{+w}{                               }\PYG{p}{(}\PYG{n}{Uint8}\PYG{p}{)}\PYG{p}{(}\PYG{l+m+mi}{255}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{215}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{f}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{255}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}Rect}\PYG{+w}{ }\PYG{n}{bar}\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{16}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{12}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{p}{(}\PYG{p}{(}\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{32}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{f}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{10}\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}RenderFillRect}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{bar}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{        }\PYG{n}{SDL\PYGZus{}RenderPresent}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{                            }\PYG{c+c1}{// swap onto the screen}
+
+\PYG{+w}{        }\PYG{n}{Uint32}\PYG{+w}{ }\PYG{n}{spent}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}GetTicks}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{now\PYGZus{}frame}\PYG{p}{;}\PYG{+w}{              }\PYG{c+c1}{// no\PYGZhy{}vsync guard}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{spent}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{15}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{SDL\PYGZus{}Delay}\PYG{p}{(}\PYG{l+m+mi}{15}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{spent}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{                  }\PYG{c+c1}{// cap \PYGZti{}60 fps}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{printf}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{\PYGZpc{}s after \PYGZpc{}.1f seconds.}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}
+\PYG{+w}{           }\PYG{n}{won}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Escaped the maze}\PYG{l+s}{\PYGZdq{}}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}}\PYG{l+s}{Quit}\PYG{l+s}{\PYGZdq{}}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{SDL\PYGZus{}GetTicks}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{start\PYGZus{}time}\PYG{p}{)}\PYG{o}{/}\PYG{l+m+mf}{1000.0}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// 4. Clean up and free resources}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}DestroyTexture}\PYG{p}{(}\PYG{n}{texture}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}DestroyRenderer}\PYG{p}{(}\PYG{n}{renderer}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}DestroyWindow}\PYG{p}{(}\PYG{n}{window}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{SDL\PYGZus{}Quit}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

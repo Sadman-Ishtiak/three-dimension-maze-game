@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{is\PYGZus{}wall}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cx}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cy}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cx}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{|}\PYG{o}{|}\PYG{+w}{ }\PYG{n}{cy}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}H}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// outside = solid}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{MAP}\PYG{p}{[}\PYG{n}{cy}\PYG{p}{]}\PYG{p}{[}\PYG{n}{cx}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}}\PYG{l+s+sc}{\PYGZsh{}}\PYG{l+s+sc}{\PYGZsq{}}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

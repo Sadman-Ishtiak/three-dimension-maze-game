@@ -1,0 +1,236 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+The Autokey cipher is a substitution cipher that incorporates the message itself into the key. It begins with a seed key (a single character or a word), and the subsequent key characters are taken from the plaintext characters. This prevents the key from repeating, making it more resistant to frequency analysis than the Vigenère cipher. 
+
+The mathematical formula for encryption is:
+$$C_i = (P_i + K_i) \mod 26$$
+
+where $K_0$ is the seed key, and $K_i = P_{i-1}$ for $i > 0$. For decryption, the formula is:
+$$P_i = (C_i - K_i + 26) \mod 26$$
+
+where the key $K_i$ is derived from previously decrypted plaintext characters.
+
+The seed key is used to shift the first plaintext character, then each subsequent character is shifted by the previous plaintext character's value. 
+
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{\textwidth}{|*{6}{>{\centering\arraybackslash}X|}}
+    \hline
+    \textbf{Plaintext} & h & e & l & l & o \\
+    \hline
+    \textbf{Plaintext Value} & 7 & 4 & 11 & 11 & 14 \\
+    \hline
+    \textbf{Key} & 3 & 7 & 4 & 11 & 11 \\
+    \hline
+    \textbf{Ciphertext Value} & 10 & 11 & 15 & 22 & 25 \\
+    \hline
+    \textbf{Ciphertext} & k & l & p & w & z \\
+    \hline
+  \end{tabularx}
+  \caption{Autokey Cipher Encryption Example}
+\end{table}
+
+The first character `h' (7) is shifted by seed key `d' (3): $(7 + 3) \mod 26 = 10$ → `k'. The next character `e' (4) is shifted by the previous plaintext value (7): $(4 + 7) \mod 26 = 11$ → `l'. This process continues with each character shifted by the previous plaintext character's value.
+
+\section{Algorithm}
+The Encryption algorithm steps are:
+\begin{enumerate}
+  \item Input Plaintext and seed key $k$.
+  \item Initialize $curr\_k := k$ and index $i := 0$.
+  \item While $i < \text{length}(plaintext)$ do:
+  \begin{enumerate}
+    \item If $char[i]$ is a letter:
+    \begin{enumerate}
+      \item $P := \text{index of } char[i]$ (0-25).
+      \item $char[i] := (P + curr\_k) \mod 26$.
+      \item $curr\_k := P$ (Update key with plaintext).
+    \end{enumerate}
+    \item Increment $i$.
+  \end{enumerate}
+  \item Return the encrypted text.
+\end{enumerate}
+
+The Decryption algorithm steps are:
+\begin{enumerate}
+  \item Input Ciphertext and seed key $k$.
+  \item Initialize $curr\_k := k$ and index $i := 0$.
+  \item While $i < \text{length}(ciphertext)$ do:
+  \begin{enumerate}
+    \item If $char[i]$ is a letter:
+    \begin{enumerate}
+      \item $C := \text{index of } char[i]$ (0-25).
+      \item $P := (C - curr\_k + 26) \mod 26$.
+      \item $char[i] := P$.
+      \item $curr\_k := P$ (Update key with decrypted plaintext).
+    \end{enumerate}
+    \item Increment $i$.
+  \end{enumerate}
+  \item Return the decrypted text.
+\end{enumerate}
+
+% \section{Flowchart}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of start] {Input Plaintext, Key};
+%     \node (initenc) [process, left=of inputtext] {$curr\_k := key$ \\ $i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc1) [process, right=of checkchar, xshift=2cm] {$P := char[i]$ \\ $char[i] := (P + curr\_k) \% 26$};
+%     \node (shiftenc2) [process, below=of shiftenc1] {$curr\_k := P$};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Ciphertext};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc1.west);
+%     \draw [line] (shiftenc1) -- (shiftenc2);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc2.west) -- (incenc.east);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Autokey Cipher Encryption}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (inputtext) [io, left=of start] {Input Ciphertext, Key};
+%     \node (initenc) [process, left=of inputtext] {$curr\_k := key$ \\ $i := 0$};
+%     \node (checkenc) [decision, below=of initenc] {$i < length$?};
+%     \node (checkchar) [decision, right=of checkenc, xshift=2cm] {Is Letter?};
+%     \node (shiftenc1) [process, right=of checkchar, xshift=2cm] {$C := char[i]$ \\ $char[i] := (C - curr\_k + 26) \% 26$};
+%     \node (shiftenc2) [process, below=of shiftenc1] {$curr\_k := char[i]$};
+%     \node (incenc) [process, below=of checkchar] {$i := i + 1$};
+%     \node (displayenc) [io, below=of checkenc] {Display Plaintext};
+%     \node (end) [terminator, below=of displayenc] {End};
+
+%     \draw [line] (start) -- (inputtext);
+%     \draw [line] (inputtext) -- (initenc);
+%     \draw [line] (initenc) -- (checkenc);
+%     \draw [line] (checkenc.east) -- node[above]{Yes} (checkchar.west);
+%     \draw [line] (checkchar.east) -- node[above]{Yes} (shiftenc1.west);
+%     \draw [line] (shiftenc1) -- (shiftenc2);
+%     \draw [line] (checkchar.south) -- node[right]{No} (incenc);
+%     \draw [line] (shiftenc2.west) -- (incenc.east);
+%     \draw [line] (incenc) -- (checkenc);
+%     \draw [line] (checkenc) -- node[left]{No} (displayenc);
+%     \draw [line] (displayenc) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Autokey Cipher Decryption}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+class autokey {
+  private:
+    int key;
+  public:
+    autokey(char k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+
+autokey::autokey(char k) {
+  while (!isalpha(k)) {
+    cout << "Key is not an alphabet. Enter a new key: ";
+    cin >> k;
+    cin.ignore();
+  }
+  if (isupper(k)) {
+    key = k - 'A';
+  } else {
+    key = k - 'a';
+  }
+}
+
+string autokey::encrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  char current_key = key;
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = ((s[i] - 'a') + current_key) % 26 + 'a';
+      current_key = s[i] - 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = ((s[i] - 'A') + current_key) % 26 + 'A';
+      current_key = s[i] - 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+string autokey::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  char current_key = key;
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = ((s[i] - 'a') - current_key + 26*2) % 26 + 'a';
+      current_key = ans[i] - 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = ((s[i] - 'A') - current_key + 26*2) % 26 + 'A';
+      current_key = ans[i] - 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+int main() {
+  cout << "Enter a character key: ";
+  char c;
+  cin >> c;
+  cin.ignore();
+  cout << "Key is: " << c << endl;
+  autokey cipher(c);
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+Using any other input other than an alphabet for the key loops back the user to enter a valid key, which should be an alphabet.
+\begin{minted}{text} 
+Enter a character key: 2
+Key is: 2
+Key is not an alphabet. Enter a new key: S
+Enter Plaintext : One two three four five six seven eight.
+Encrypted text: Gbr xpk hayvi jtil wndz waf pwzzr rmona.
+Decrypted text: One two three four five six seven eight.
+\end{minted}
+Another example with a different key and plaintext which shows a problem with the encryption where the key is $A$ which is 0, and the string also contains $a$ or $A$ which is also 0, so the key does not change much in the string.
+\begin{minted}{text}
+Enter a character key: A
+Key is: A
+Enter Plaintext : abacadafagah                                
+Encrypted text: abbccddffggh
+Decrypted text: abacadafagah
+\end{minted}
+
+\section{Conclusion}
+The Autokey cipher is more resistant to frequency analysis than the Vigen\`ere cipher because the plaintext itself generates the key stream. However, it remains vulnerable to key recovery attacks and is not used in modern cryptography.

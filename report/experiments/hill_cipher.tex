@@ -1,0 +1,242 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+\subsection*{Hill Cipher}
+The Hill cipher, proposed by Lester S. Hill, is a \textbf{polyalphabetic block cipher}.
+Unlike stream ciphers (which process one symbol at a time), it encrypts plaintext in fixed-size blocks of length \(m\). Each ciphertext symbol in a block depends on all plaintext symbols of that block.
+
+Let the plaintext block be a row vector
+\[
+P = [P_1\; P_2\; \cdots\; P_m]
+\]
+and let \(K\) be an \(m \times m\) key matrix over \(Z_{26}\).
+Encryption is performed as:
+\[
+C = P K \pmod{26}
+\]
+where \(C = [C_1\; C_2\; \cdots\; C_m]\).
+
+For decryption:
+\[
+P = C K^{-1} \pmod{26}.
+\]
+So the key matrix must be invertible modulo 26, i.e., \(\gcd(\det(K), 26)=1\).
+If this condition is not satisfied, decryption is not possible.
+
+Hill cipher resists single-letter frequency analysis due to block mixing, but is vulnerable to known-plaintext attacks.
+
+\section{Algorithm}
+The algorithm for encryption using Hill cipher is,
+\begin{enumerate}
+  \item Inout plaintext string \(P\).
+  \item Initialize an empty ciphertext string \(C\).
+  \item Process \(P\) in blocks of 2 characters:
+  \begin{enumerate}
+    \item Convert first character to number: \(p_1 = P[i]-'a'\).
+    \item If second character exists, set \(p_2 = P[i+1]-'a'\); otherwise use padding \(x\), i.e., \(p_2 = 'x'-'a'\).
+    \item Compute:
+    \[
+      c_1 = (k_{11}p_1 + k_{12}p_2)\bmod 26,\quad
+      c_2 = (k_{21}p_1 + k_{22}p_2)\bmod 26
+    \]
+    \item Convert \(c_1, c_2\) back to letters and append to \(C\).
+  \end{enumerate}
+  \item Return ciphertext \(C\).
+\end{enumerate}
+The algorithm for decryption using Hill cipher is,
+\begin{enumerate}
+  \item Input ciphertext string \(C\).
+  \item Initialize an empty plaintext string \(P\).
+  \item Compute inverse key matrix \(K^{-1}\) modulo 26 (only possible if \(\gcd(\det(K),26)=1\)).
+  \item Process \(C\) in blocks of 2 characters:
+  \begin{enumerate}
+    \item Convert block characters to numbers:
+    \[
+      c_1 = C[i]-'a',\quad c_2 = C[i+1]-'a'
+    \]
+    \item Compute:
+    \[
+      p_1 = (k^{-1}_{11}c_1 + k^{-1}_{12}c_2)\bmod 26,\quad
+      p_2 = (k^{-1}_{21}c_1 + k^{-1}_{22}c_2)\bmod 26
+    \]
+    \item If any value is negative, add 26 to normalize into \([0,25]\).
+    \item Convert \(p_1, p_2\) back to letters and append to \(P\).
+  \end{enumerate}
+  \item Return plaintext \(P\).
+\end{enumerate}
+
+% \section{Flowchart (motherboard)}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, below=of start] {Input};
+%     \node (process1) [process, below=of input] {Process};
+%     \node (decision1) [decision, below=of process1, yshift=-0.2cm] {Condition?};
+%     \node (loopstep) [process, right=of decision1, xshift=1.2cm] {Update / Loop};
+%     \node (output) [io, below=of decision1, yshift=-0.3cm] {Output};
+%     \node (end) [terminator, below=of output] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (process1);
+%     \draw [line] (process1) -- (decision1);
+
+%     \draw [line] (decision1.east) -- node[above]{No} (loopstep.west);
+%     \draw [line] (loopstep.north) |- ([xshift=1.0cm]process1.east) |- (process1.east);
+
+%     \draw [line] (decision1) -- node[right]{Yes} (output);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart title}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+class hill {
+  private:
+    vector<vector<int>> key;
+    vector<vector<int>> inverseKey;
+
+    public:
+    hill();
+    void printKey();
+    string encrypt(string plaintext);
+    string decrypt(string ciphertext);
+    int modInverse(int a, int m);
+    vector<vector<int>> matrixInverse(vector<vector<int>>& mat);
+};
+
+int hill::modInverse(int a, int m) {
+  a %= m;
+  if (a < 0) a += m;
+  for (int i = 1; i < m; i++) {
+    if ((a * i) % m == 1) return i;
+  }
+  return -1;
+}
+
+void hill::printKey() {
+  for (const auto& row : key) {
+    for (int val : row) {
+      cout << val << " ";
+    }
+    cout << endl;
+  }
+}
+
+vector<vector<int>> hill::matrixInverse(vector<vector<int>>& mat) {
+  int n = mat.size();
+  int det = (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]) % 26;
+  if (det < 0) det += 26;
+  int detInv = hill::modInverse(det, 26);
+  if (detInv == -1) {
+    cerr << "Error: key matrix is not invertible modulo 26 (det=" << det << ").\n";
+    exit(1);
+  }
+  vector<vector<int>> inv(n, vector<int>(n));
+  inv[0][0] = (mat[1][1] * detInv) % 26;
+  inv[0][1] = (-mat[0][1] * detInv) % 26;
+  inv[1][0] = (-mat[1][0] * detInv) % 26;
+  inv[1][1] = (mat[0][0] * detInv) % 26;
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      inv[i][j] %= 26;
+      if (inv[i][j] < 0) inv[i][j] += 26;
+    }
+  }
+  return inv;
+}
+
+hill::hill(){
+  srand(time(0));
+  bool validKey = false;
+  while (!validKey) {
+    key = {{rand() % 26, rand() % 26}, {rand() % 26, rand() % 26}};
+    // while(__gcd(key[0][0], 26) != 1) key[0][0] = rand() % 26;
+    // while(__gcd(key[0][1], 26) != 1) key[0][1] = rand() % 26;
+    // while(__gcd(key[1][0], 26) != 1) key[1][0] = rand() % 26;
+    // while(__gcd(key[1][1], 26) != 1) key[1][1] = rand() % 26;
+    int det = (key[0][0] * key[1][1] - key[0][1] * key[1][0]) % 26;
+    if (det < 0) det += 26;
+    if (modInverse(det, 26) != -1) {
+      validKey = true;
+    }
+  }
+  inverseKey = matrixInverse(key);
+}
+
+string hill::encrypt(string plaintext) {
+  string ciphertext = "";
+  for (int i = 0; i < plaintext.length(); i += 2) {
+    int p1 = plaintext[i] - 'a';
+    int p2 = (i + 1 < plaintext.length()) ? plaintext[i + 1] - 'a' : 'x' - 'a';
+    int c1 = (key[0][0] * p1 + key[0][1] * p2) % 26;
+    int c2 = (key[1][0] * p1 + key[1][1] * p2) % 26;
+    ciphertext += (char)('a' + c1);
+    ciphertext += (char)('a' + c2);
+  }
+  return ciphertext;
+}
+
+string hill::decrypt(string ciphertext) {
+  string plaintext = "";
+  for (int i = 0; i < ciphertext.length(); i += 2) {
+    int c1 = ciphertext[i] - 'a';
+    int c2 = ciphertext[i + 1] - 'a';
+    int p1 = (inverseKey[0][0] * c1 + inverseKey[0][1] * c2) % 26;
+    int p2 = (inverseKey[1][0] * c1 + inverseKey[1][1] * c2) % 26;
+    if (p1 < 0) p1 += 26;
+    if (p2 < 0) p2 += 26;
+    plaintext += (char)('a' + p1);
+    plaintext += (char)('a' + p2);
+  }
+  return plaintext;
+}
+
+int main() {
+  hill cipher;
+  cout << "Key Matrix:\n";
+  cipher.printKey();
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\newpage
+
+\section{Result and Discussion - I/O}
+While some words is encrypted and decrypted correctly, some words are not decrypted back to the original plaintext.
+\begin{minted}{text}
+Key Matrix:
+20 19
+25 2
+Enter Plaintext : password
+Encrypted text: olaseghp
+Decrypted text: password
+\end{minted}
+Others have some random letters in the decrypted text, which is due to the padding character 'x' used when the plaintext length is odd.
+\begin{minted}{text}
+Key Matrix:
+25 6
+0 5
+Enter Plaintext : encrypt
+Encrypted text: wnwhoxpl
+Decrypted text: encryptx
+\end{minted}
+
+
+\section{Conclusion}
+Hill cipher demonstrates how linear algebra applies to cryptography, but its small block size limits practical security. Larger matrices improve security at the cost of complexity.

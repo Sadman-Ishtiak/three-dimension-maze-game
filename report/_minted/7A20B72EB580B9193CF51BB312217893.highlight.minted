@@ -1,0 +1,21 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{} planes \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mf}{\PYGZhy{}1e\PYGZhy{}9}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{          }\PYG{c+c1}{// aims down \PYGZhy{}\PYGZgt{} floor plane z = 0}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{t}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{normal}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// floor faces up}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{floor\PYGZus{}color\PYGZus{}at}\PYG{p}{(}\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}9}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{    }\PYG{c+c1}{// aims up \PYGZhy{}\PYGZgt{} ceiling plane z = WALL\PYGZus{}H}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{WALL\PYGZus{}H}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{origin}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{direction}\PYG{p}{.}\PYG{n}{z}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{t}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mf}{1e\PYGZhy{}6}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{hit\PYGZus{}point}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{at}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{normal}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)}\PYG{p}{;}\PYG{+w}{   }\PYG{c+c1}{// ceiling faces down}
+\PYG{+w}{        }\PYG{n}{best}\PYG{p}{.}\PYG{n}{material\PYGZus{}color}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{vec3}\PYG{p}{(}\PYG{l+m+mf}{0.22}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.22}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mf}{0.26}\PYG{p}{)}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t\PYGZus{}plane}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{best}\PYG{p}{.}\PYG{n}{ray\PYGZus{}t}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// walls must beat this distance or lose}
+\end{MintedVerbatim}

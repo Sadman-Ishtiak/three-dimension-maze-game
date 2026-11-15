@@ -1,0 +1,133 @@
+% Experiment 11: Implementation and Analysis of Feistel Cipher Structure
+\section{Theory}
+The Feistel cipher structure is a symmetric block cipher design used as the
+foundation of many well-known encryption algorithms, including DES. It
+divides the input block into two equal halves, $L_0$ and $R_0$, and applies
+a sequence of identical rounds. In each round $i$, the right half is
+processed by a round function $F$ together with a round-specific subkey
+$K_i$, and the result is XORed with the left half:
+\[
+L_i = R_{i-1}, \qquad R_i = L_{i-1} \oplus F(R_{i-1}, K_i)
+\]
+A key advantage is that $F$ need not be invertible: decryption simply reruns the same structure with subkeys in reverse order, allowing arbitrarily complex non-invertible functions while keeping the overall cipher reversible.
+
+\section{Algorithm}
+\begin{enumerate}
+  \item Split the plaintext block into two equal halves, $L_0$ and $R_0$.
+  \item Generate a set of round keys $K_1, K_2, \dots, K_n$ from the master key.
+  \item For each round $i = 1$ to $n$:
+  \begin{enumerate}
+    \item Compute $F(R_{i-1}, K_i)$.
+    \item Set $L_i = R_{i-1}$.
+    \item Set $R_i = L_{i-1} \oplus F(R_{i-1}, K_i)$.
+  \end{enumerate}
+  \item After the final round, concatenate $L_n$ and $R_n$ to form the ciphertext.
+  \item To decrypt, apply the same round structure to the ciphertext, using
+        the round keys in reverse order ($K_n, K_{n-1}, \dots, K_1$).
+  \item Verify that the decrypted output matches the original plaintext.
+\end{enumerate}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+class feistel {
+  private:
+    int rounds;
+    vector<int> roundKeys;
+    static const int HALF_BITS = 4;
+    int roundFunction(int R, int K) {
+      int x = (R ^ K) & ((1 << HALF_BITS) - 1);
+      return ((x << 1) | (x >> (HALF_BITS - 1))) & ((1 << HALF_BITS) - 1);
+    }
+  public:
+    feistel(int masterKey, int r);
+    int encrypt(int plaintext);
+    int decrypt(int ciphertext);
+};
+feistel::feistel(int masterKey, int r) {
+  rounds = r;
+  masterKey &= (1 << HALF_BITS) - 1;
+  for (int i = 0; i < rounds; i++) {
+    roundKeys.push_back((masterKey + i * 3) & ((1 << HALF_BITS) - 1));
+  }
+  cout << "Round keys generated: ";
+  for (int k : roundKeys) cout << bitset<HALF_BITS>(k) << " ";
+  cout << endl;
+}
+int feistel::encrypt(int plaintext) {
+  int L = (plaintext >> HALF_BITS) & ((1 << HALF_BITS) - 1);
+  int R = plaintext & ((1 << HALF_BITS) - 1);
+  for (int i = 0; i < rounds; i++) {
+    int newL = R;
+    int newR = L ^ roundFunction(R, roundKeys[i]);
+    L = newL;
+    R = newR;
+    cout << "  Round " << i + 1 << ": L=" << bitset<HALF_BITS>(L)
+         << " R=" << bitset<HALF_BITS>(R) << endl;
+  }
+  return (L << HALF_BITS) | R;
+}
+int feistel::decrypt(int ciphertext) {
+  int L = (ciphertext >> HALF_BITS) & ((1 << HALF_BITS) - 1);
+  int R = ciphertext & ((1 << HALF_BITS) - 1);
+  for (int i = rounds - 1; i >= 0; i--) {
+    int newR = L;
+    int newL = R ^ roundFunction(L, roundKeys[i]);
+    L = newL;
+    R = newR;
+    cout << "  Round " << (rounds - i) << ": L=" << bitset<HALF_BITS>(L)
+         << " R=" << bitset<HALF_BITS>(R) << endl;
+  }
+  return (L << HALF_BITS) | R;
+}
+int main() {
+  cout << "Enter plaintext (0-255): ";
+  int plaintext;
+  cin >> plaintext;
+  cout << "Enter master key (0-15): ";
+  int masterKey;
+  cin >> masterKey;
+  plaintext &= 255;
+
+  feistel cipher(masterKey, 4);
+
+  cout << "\n--- Encryption ---" << endl;
+  cout << "Plaintext : " << bitset<8>(plaintext) << endl;
+  int cipherText = cipher.encrypt(plaintext);
+  cout << "Ciphertext: " << bitset<8>(cipherText) << endl;
+
+  cout << "\n--- Decryption ---" << endl;
+  int decrypted = cipher.decrypt(cipherText);
+  cout << "Decrypted : " << bitset<8>(decrypted) << endl;
+
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+We take integer values as input as they are easiest to reference as bit stream and are easy to run xor and other mathematical operations. 
+\begin{verbatim}
+Enter plaintext (0-255): 170
+Enter master key (0-15): 5
+Round keys generated: 0101 1000 1011 1110
+
+--- Encryption ---
+Plaintext : 10101010
+Round 1: L=1010 R=0101
+Round 2: L=0101 R=0001
+Round 3: L=0001 R=0000
+Round 4: L=0000 R=1100
+Ciphertext: 00001100
+
+--- Decryption ---
+Round 1: L=0001 R=0000
+Round 2: L=0101 R=0001
+Round 3: L=1010 R=0101
+Round 4: L=1010 R=1010
+Decrypted : 10101010
+\end{verbatim}
+
+
+\section{Conclusion}
+We successfully implemented and tested an 8-bit Feistel cipher with an XOR-and-rotate round function. The experiment confirms that Feistel networks allow complex round functions without requiring their inversion during decryption.

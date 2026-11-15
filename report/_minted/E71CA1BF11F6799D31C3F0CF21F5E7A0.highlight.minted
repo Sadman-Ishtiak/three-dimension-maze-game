@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}SDL2/SDL.h\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}bits/stdc++.h\PYGZgt{}}\PYG{c+c1}{           // vector, algorithm, cmath, etc.}
+\PYG{c+cp}{\PYGZsh{}}\PYG{c+cp}{define PI 3.14159265358979323846}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{std}\PYG{p}{;}
+
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{       }\PYG{n}{SCREEN\PYGZus{}WIDTH}\PYG{+w}{    }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{640}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{       }\PYG{n}{SCREEN\PYGZus{}HEIGHT}\PYG{+w}{   }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{480}\PYG{p}{;}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{EYE\PYGZus{}HEIGHT}\PYG{+w}{      }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.5}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// camera height (half a wall)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{FOV\PYGZus{}DEG}\PYG{+w}{         }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{75.0}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// field of view, degrees}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{MOVE\PYGZus{}SPD}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// units per second (ground)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{TURN\PYGZus{}SPD}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.5}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// radians per second}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{CAPS\PYGZus{}MULTIPLIER}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{2.5}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// sprint multiplier (Shift/CapsLock)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{WALL\PYGZus{}H}\PYG{+w}{          }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{p}{;}\PYG{+w}{     }\PYG{c+c1}{// wall height (matches EYE\PYGZus{}HEIGHT)}
+\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{    }\PYG{n}{PLAYER\PYGZus{}R}\PYG{+w}{        }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{0.28}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// collision radius (corridor = 1.0)}
+\end{MintedVerbatim}

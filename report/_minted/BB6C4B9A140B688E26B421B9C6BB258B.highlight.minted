@@ -1,0 +1,12 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{ray}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{origin}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{direction}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{ray}\PYG{p}{(}\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{o}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{d}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{origin}\PYG{p}{(}\PYG{n}{o}\PYG{p}{)}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{direction}\PYG{p}{(}\PYG{n}{d}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{at}\PYG{p}{(}\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{origin}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{direction}\PYG{o}{*}\PYG{n}{t}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{hit\PYGZus{}record}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n}{ray\PYGZus{}t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mf}{1e30}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// distance along ray (huge = no hit)}
+\PYG{+w}{    }\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{hit\PYGZus{}point}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{normal}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{material\PYGZus{}color}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}\PYG{p}{;}
+\end{MintedVerbatim}

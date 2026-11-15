@@ -1,0 +1,8 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// +1.0 = standing on the exit, \PYGZhy{}1.0 = farthest reachable cell.}
+\PYG{k}{static}\PYG{+w}{ }\PYG{k+kt}{double}\PYG{+w}{ }\PYG{n+nf}{temperature}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vec3}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{exit\PYGZus{}dist}\PYG{p}{[}\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{MAZE\PYGZus{}W}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{n}{pos}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{]}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// row = world y}
+\PYG{+w}{    }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{d}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{p}{;}\PYG{+w}{                                  }\PYG{c+c1}{// unreachable = coldest}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mf}{1.0}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mf}{2.0}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{max\PYGZus{}dist}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

@@ -1,0 +1,9 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{vec3}\PYG{+w}{ }\PYG{n}{candidate}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{;}
+\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{step}\PYG{p}{.}\PYG{n}{x}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{collides}\PYG{p}{(}\PYG{n}{candidate}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
+
+\PYG{n}{candidate}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{;}
+\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{o}{=}\PYG{+w}{ }\PYG{n}{step}\PYG{p}{.}\PYG{n}{y}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{collides}\PYG{p}{(}\PYG{n}{candidate}\PYG{p}{)}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{pos}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{candidate}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{;}
+\end{MintedVerbatim}

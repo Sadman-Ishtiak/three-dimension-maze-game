@@ -1,0 +1,159 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+Column transposition cipher arranges the plaintext into a table (grid) and then permutes the columns based on a key. For example, using \textbf{Jatiya Kabi Kazi Nazrul Islam University} in an $8 \times 5$ grid:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\ \hline
+J & a & t & i & y & a & \textvisiblespace & K \\ \hline
+a & b & i & \textvisiblespace & K & a & z & i \\ \hline
+\textvisiblespace & N & a & z & r & u & l & \textvisiblespace \\ \hline
+I & s & l & a & m & \textvisiblespace & U & n \\ \hline
+i & v & e & r & s & i & t & y \\ \hline
+\end{tabular}
+\caption{Characters arranged in an $8 \times 5$ table for Columnar Transposition}
+\end{table}
+
+Columns are then reordered according to a key (e.g. \textbf{3 1 4 2 5 6 8 7}), and the ciphertext is read row-by-row from the permuted table. Applying the inverse permutation reverts the ciphertext back to the original plaintext.
+
+\section{Algorithm}
+Encryption algorithm for Column transposition cipher
+\begin{enumerate}
+  \item Take the plaintext $T$ of length $n$ and a key array $K$ of length $k$.
+  \item Initialize an empty string $E$ of length $n$.
+  \item For each index $i$ from $0$ to $n-1$:
+  \begin{enumerate}
+    \item Calculate the source index in the plaintext as $j = K[i \pmod k] + \lfloor i / k \rfloor \times k$.
+    \item Set the $i$-th character of the encrypted text: $E[i] = T[j]$.
+  \end{enumerate}
+  \item Return the encrypted string $E$.
+\end{enumerate}
+
+Decryption algorithm for Column transposition cipher
+\begin{enumerate}
+  \item Take the ciphertext $E$ of length $n$ and the same key array $K$ of length $k$.
+  \item Initialize an empty string $D$ of length $n$.
+  \item For each index $i$ from $0$ to $n-1$:
+  \begin{enumerate}
+    \item Calculate the destination index in the decrypted text as $j = K[i \pmod k] + \lfloor i / k \rfloor \times k$.
+    \item Set the $j$-th character of the decrypted text: $D[j] = E[i]$.
+  \end{enumerate}
+  \item Return the decrypted string $D$.
+\end{enumerate}
+
+% \section{Flowchart (motherboard)}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, below=of start] {Input};
+%     \node (process1) [process, below=of input] {Process};
+%     \node (decision1) [decision, below=of process1, yshift=-0.2cm] {Condition?};
+%     \node (loopstep) [process, right=of decision1, xshift=1.2cm] {Update / Loop};
+%     \node (output) [io, below=of decision1, yshift=-0.3cm] {Output};
+%     \node (end) [terminator, below=of output] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (process1);
+%     \draw [line] (process1) -- (decision1);
+
+%     \draw [line] (decision1.east) -- node[above]{No} (loopstep.west);
+%     \draw [line] (loopstep.north) |- ([xshift=1.0cm]process1.east) |- (process1.east);
+
+%     \draw [line] (decision1) -- node[right]{Yes} (output);
+%     \draw [line] (output) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart title}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+class column {
+  vector<int> key;
+public:
+  column(int k);
+  void showKey();
+  string encrypt(string text);
+  string decrypt(string text);
+};
+column::column(int k) {
+  for (int i = 0; i < k; i++) {
+    key.push_back(i);
+  }
+  for (int i = 0; i < k*10; i++) {
+    int j = rand() % k;
+    swap(key[i % k], key[j]);
+  }
+}
+
+void column::showKey() {
+  cout << "\nKey is: ";
+  for (int i = 0; i < key.size(); i++) {
+    cout << key[i] << " ";
+  }
+  cout << endl;
+}
+
+string column::encrypt(string text) {
+  int k = key.size();
+  int n = text.size();
+  string encrypted(n, ' ');
+  for (int i = 0; i < n; i++) {
+    encrypted[i] = text[key[i % k] + (i / k) * k];
+  }
+  return encrypted;
+}
+
+string column::decrypt(string text) {
+  int k = key.size();
+  int n = text.size();
+  string decrypted(n, ' ');
+  for (int i = 0; i < n; i++) {
+    decrypted[key[i % k] + (i / k) * k] = text[i];
+  }
+  return decrypted;
+}
+
+
+int main() {
+  int k;
+  cout << "Enter the key length: ";
+  cin >> k;
+  cin.ignore();
+  column cipher(k);
+  cipher.showKey();
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+Column transposition key is randomly generated in our program.
+\begin{minted}{text}
+Enter the key length: 5
+
+Key is: 2 4 0 1 3 
+Enter Plaintext : This is encrypted with some looping of the text.
+Encrypted text: i Ths niseytcrp iedw oths omeligopnft o  ehet.x
+Decrypted text: This is encrypted with some looping of the tex .
+\end{minted}
+
+\section{Conclusion}
+We successfully implemented a column transposition cipher with random key generation. Since it is vulnerable to statistical attacks, it is typically used as one layer within more complex encryption systems.
+

@@ -1,0 +1,286 @@
+\chapter{Methodology: How Each Function Works}
+
+This chapter explains the core functions in the order they run every frame: how I move the player (\texttt{update}), how I detect collision (\texttt{collides}), how rays find surfaces (\texttt{cast\_ray}), how visible surfaces are coloured (\texttt{shade}), how the frame is rendered (\texttt{render}), and how the hot/cold score is computed (\texttt{temperature}/\texttt{build\_exit\_dist}). The main loop is described at the end.
+
+\section{Coordinate System and World}
+
+The engine uses a \textbf{Z-up} coordinate system:
+\begin{itemize}
+    \item $x, y$: the ground plane (the two axes of the map),
+    \item $z$: height, with the floor at $z=0$ and the ceiling at $z=1$ (WALL\_H),
+    \item the camera eye is at $z = \texttt{EYE\_HEIGHT} = 0.5$, the middle of a wall.
+\end{itemize}
+The maze is a $16\times16$ character grid \texttt{MAP[cy][cx]}: \texttt{\#} is a solid unit cube, \texttt{.} is empty floor, \texttt{S} is the start and \texttt{E} the exit. A cell $(c_x, c_y)$ occupies the square $[c_x, c_x+1]\times[c_y, c_y+1]$ on the ground. The row index corresponds to world $y$ (hence variables named \texttt{start\_z}, \texttt{exit\_z}).
+
+\section{Player Movement: \texttt{update(pos, yaw, dt, keys)}}
+
+\subsection{Turning}
+\begin{minted}{cpp}
+yaw += ((keys[SDL_SCANCODE_LEFT] ? 1.0 : 0.0) -
+        (keys[SDL_SCANCODE_RIGHT] ? 1.0 : 0.0)) * TURN_SPD * dt;
+\end{minted}
+The Left and Right arrows change the yaw angle $\psi$. Multiplying by the frame time $dt$ makes the turn speed independent of frame rate. TURN\_SPD = 2.5 rad/s.
+
+\subsection{Camera Direction and Right Vector}
+\begin{minted}{cpp}
+vec3 forward(cos(yaw), sin(yaw), 0.0);   // flat on the ground
+vec3 right   = cross(forward, vec3(0, 0, 1)); // world up = +z
+\end{minted}
+\begin{minted}{cpp}
+double fwd = (keys[SDL_SCANCODE_W] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_S] ? 1.0 : 0.0)
+           + (keys[SDL_SCANCODE_UP] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_DOWN] ? 1.0 : 0.0);
+fwd = clamp(fwd, -1.0, 1.0);
+double side = (keys[SDL_SCANCODE_D] ? 1.0 : 0.0) - (keys[SDL_SCANCODE_A] ? 1.0 : 0.0);
+bool is_fast = keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]
+            || (SDL_GetModState() & KMOD_CAPS);
+double current_speed = is_fast ? (MOVE_SPD * CAPS_MULTIPLIER) : MOVE_SPD;
+vec3 step = (forward * fwd + right * side) * (current_speed * dt);
+\end{minted}
+MOVE\_SPD = 2.0 units/s; CAPS\_MULTIPLIER = 2.5 (sprint is 5.0 units/s). Arrow Up/Down act as W/S aliases. The ternary `? 1.0 : 0.0` converts key state to signed intent; clamping keeps diagonal combinations from exceeding unit speed.
+
+\subsection{Axis-Separated Wall Sliding}
+\begin{minted}{cpp}
+vec3 candidate = pos;
+candidate[0] += step.x();
+if (!collides(candidate)) pos[0] = candidate[0];
+
+candidate = pos;
+candidate[1] += step.y();
+if (!collides(candidate)) pos[1] = candidate[1];
+\end{minted}
+Horizontal motion is tried on each axis separately. If the $x$ step is blocked but the $y$ step is free, the player slides along the wall instead of stopping. Candidate positions are tested against the \texttt{collides} function; only successful moves update the actual position.
+
+\section{Collision Detection: \texttt{collides(pos)}}
+
+The player's altitude is fixed at EYE\_HEIGHT = 0.5, which is always inside a wall's $z \in [0, 1]$ range. So only the ground footprint matters: a circle of radius \texttt{PLAYER\_R} = 0.28 vs axis-aligned squares.
+\begin{minted}{cpp}
+int x0 = (int)floor(p.x() - PLAYER_R), x1 = (int)floor(p.x() + PLAYER_R);
+int y0 = (int)floor(p.y() - PLAYER_R), y1 = (int)floor(p.y() + PLAYER_R);
+
+for (int cy = y0; cy <= y1; cy++)
+    for (int cx = x0; cx <= x1; cx++) {
+        if (!is_wall(cx, cy)) continue;
+        // Closest point on this square to the circle center:
+        double dx = p.x() - clamp(p.x(), (double)cx, cx + 1.0);
+        double dy = p.y() - clamp(p.y(), (double)cy, cy + 1.0);
+        if (dx*dx + dy*dy < PLAYER_R * PLAYER_R) return true;
+    }
+return false;
+\end{minted}
+The loop checks only cells overlapped by the player's bounding box (typically 3-4 cells). The clamp finds the closest point on the square $[cx, cx+1] \times [cy, cy+1]$ to the player center; squared distance < squared radius means collision. No $\sqrt{}$ is computed.
+
+\section{Hot/Cold Score: \texttt{build\_exit\_dist} and \texttt{temperature}}
+
+The exit cell is not a special object; the hot/cold score is a BFS walking distance from the exit over floor cells.
+\begin{minted}{cpp}
+// BFS from the exit over floor cells:
+static void build_exit_dist() {
+    exit_dist.assign(MAZE_W * MAZE_H, -1);
+    vector<int> q{exit_z * MAZE_W + exit_x};
+    exit_dist[q[0]] = 0;
+    for (size_t h = 0; h < q.size(); h++) {
+        int c = q[h], cx = c % MAZE_W, cy = c / MAZE_W;
+        const int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
+        for (int k = 0; k < 4; k++) {
+            int nx = cx + dx[k], ny = cy + dy[k];
+            if (is_wall(nx, ny) || exit_dist[ny * MAZE_W + nx] >= 0) continue;
+            exit_dist[ny * MAZE_W + nx] = exit_dist[c] + 1;
+            q.push_back(ny * MAZE_W + nx);
+        }
+    }
+    for (int d : exit_dist) if (d > max_dist) max_dist = d;
+}
+\end{minted}
+The queue is a growing vector (no $\text{pop\_front}$ needed). Distance is measured in cell steps (Manhattan metric through corridors). Wall cells block propagation.
+
+Then temperature maps distance to $[-1, 1]$:
+\begin{minted}{cpp}
+// +1.0 = standing on the exit, -1.0 = farthest reachable cell.
+static double temperature(const vec3& pos) {
+    int d = exit_dist[(int)pos.y() * MAZE_W + (int)pos.x()]; // row = world y
+    if (d < 0) d = max_dist;                                  // unreachable = coldest
+    return 1.0 - 2.0 * d / max_dist;
+}
+\end{minted}
+Used in the title bar as "Score +0.XX HOT/WARM/COOL/COLD" and as a color bar (blue $\to$ red gradient) drawn on the renderer after the 3D scene.
+
+\section{Ray Casting: \texttt{cast\_ray(ray)}}
+
+A ray is $\mathbf{P}(t)=\mathbf{O}+t\mathbf{D}$ with $t \ge 0$ (direction need not be unit; \texttt{ray::at}$(t)$ computes $O + t D$). The function returns the nearest surface hit among floor, ceiling, and walls.
+
+\subsection{Floor and Ceiling Planes}
+\begin{minted}{cpp}
+// ---- planes ----
+if (r.direction.z() < -1e-9) {          // aims down -> floor plane z = 0
+    double t = -r.origin.z() / r.direction.z();
+    if (t > 1e-6) {
+        best.ray_t = t;
+        best.hit_point = r.at(t);
+        best.normal = vec3(0, 0, 1);    // floor faces up
+        best.material_color = floor_color_at(best.hit_point);
+    }
+} else if (r.direction.z() > 1e-9) {    // aims up -> ceiling plane z = WALL_H
+    double t = (WALL_H - r.origin.z()) / r.direction.z();
+    if (t > 1e-6) {
+        best.ray_t = t;
+        best.hit_point = r.at(t);
+        best.normal = vec3(0, 0, -1);   // ceiling faces down
+        best.material_color = vec3(0.22, 0.22, 0.26);
+    }
+}
+double t_plane = best.ray_t;            // walls must beat this distance or lose
+\end{minted}
+On a plane of constant height $z=z_p$, the ray equation gives $O_z + t D_z = z_p$. The $10^{-9}$ check avoids division by near-zero; the $10^{-6}$ threshold ignores intersections at/behind the origin. The floor color includes the green exit tile check (see below).
+
+\subsection{Grid Traversal: 2D DDA (Amanatides \& Woo)}
+Walls are tested by marching through the grid cells in the exact order the ray crosses them, so the first wall cell entered is the nearest hit.
+\begin{minted}{cpp}
+// Start cell:
+int cx = (int)floor(r.origin.x()), cy = (int)floor(r.origin.y());
+// Step signs:
+int sx = r.direction.x() > 0 ? 1 : -1;
+int sy = r.direction.y() > 0 ? 1 : -1;
+// Cost to cross ONE full cell (direction is NOT unit here; r.direction is raw):
+double dtx = fabs(1.0 / r.direction.x());
+double dty = fabs(1.0 / r.direction.y());
+// Time of FIRST gridline crossing:
+double tx = (sx > 0 ? (cx + 1.0 - r.origin.x()) : (r.origin.x() - cx)) * dtx;
+double ty = (sy > 0 ? (cy + 1.0 - r.origin.y()) : (r.origin.y() - cy)) * dty;
+
+double t_entry = 0.0;   // when we entered the CURRENT cell
+int entry_axis = -1;    // 0 = came through x-face, 1 = came through y-face
+
+for (int i = 0; i < 256 && t_entry < t_plane; i++) {   // bounded, and can't beat planes
+    if (entry_axis >= 0 && is_wall(cx, cy)) {
+        double z_at = r.origin.z() + r.direction.z() * t_entry;
+        if (z_at >= 0.0 && z_at <= WALL_H) {
+        // Entering a wall cell through a face: that face IS the visible surface.
+        // Gate: the cube only spans z in [0, WALL_H] -- check ray altitude at entry.
+            best.ray_t          = t_entry;
+            best.hit_point      = r.at(t_entry);
+            best.normal         = (entry_axis == 0) ? vec3(-sx, 0, 0) : vec3(0, -sy, 0);
+            best.material_color = vec3(0.55, 0.47, 0.40);   // tan, shading later
+            return best;    // first wall hit wins: nearest surface, early exit
+        }
+    }
+    // advance: cross whichever gridline comes FIRST (smaller time),
+    // pay one full cell of cost on that axis, remember the entry face.
+    if (tx < ty) { t_entry = tx; tx += dtx; cx += sx; entry_axis = 0; }
+    else         { t_entry = ty; ty += dty; cy += sy; entry_axis = 1; }
+}
+\end{minted}
+Key details: direction vectors are NOT pre-normalized; `unit_vector` is only used in render (see below). The ray's altitude at entry ($z\_at$) is checked so walls only block where they exist ($z \in [0, 1]$). Normal points back toward the ray (negative step direction on the axis crossed). Early return on first wall hit since DDA visits cells in distance order.
+
+\subsection{Exit Tile (Green Floor)}
+The green exit tile is implemented as a special floor color, not a separate object:
+\begin{minted}{cpp}
+vec3 floor_color_at(const vec3& point) {
+    int grid_x = (int)floor(point.x());
+    int grid_y = (int)floor(point.y());
+    if (grid_x == exit_x && grid_y == exit_z) {
+        return vec3(0.20, 0.85, 0.30);  // green exit tile
+    }
+    bool is_light_tile = ((grid_x + grid_y) % 2) == 0;
+    return is_light_tile ? vec3(0.60, 0.58, 0.55)  // light gray
+                        : vec3(0.30, 0.30, 0.33);  // dark gray
+}
+\end{minted}
+Neighbour tiles stay grey; the green appears only on the exact $\texttt{E}$ cell.
+
+\section{Shading: \texttt{shade(hit\_record, eye)}}
+
+The shading model is Lambertian (diffuse) with a headlamp at the camera position, gamma-corrected:
+\begin{minted}{cpp}
+vec3 shade(const hit_record& h, const vec3& eye) {
+    vec3 to_light = eye - h.hit_point;              // surface -> torch
+    double d2 = dot(to_light, to_light);            // squared distance
+    double diff = max(dot(h.normal, unit_vector(to_light)), 0.0);  // Lambert cosine
+    double atten = 1.0 / (0.9 + 0.30 * d2);         // distance falloff
+    vec3 lit = h.material_color * (vec3(0.14, 0.14, 0.18) +          // ambient
+                                   vec3(1.7, 1.45, 1.10) * (diff * atten)); // warm torch
+    return vec3(sqrt(clamp(lit.x(), 0.0, 1.0)),
+                sqrt(clamp(lit.y(), 0.0, 1.0)),
+                sqrt(clamp(lit.z(), 0.0, 1.0)));    // gamma 2.0 encode
+}
+\end{minted}
+\begin{itemize}
+    \item \textbf{Light at eye}: no shadow rays; every visible point is lit.
+    \item \textbf{Ambient}: $(0.14, 0.14, 0.18)$ ~ dark bluish base light.
+    \item \textbf{Lamp color}: $(1.7, 1.45, 1.10)$ warm yellowish; multiplied by Lambert cosine.
+    \item \textbf{Attenuation}: $1 / (0.9 + 0.30 d^2)$ — inverse square-ish with offset.
+    \item \textbf{Gamma 2.0}: $\sqrt{\text{clamp}(C, 0, 1)}$ compensates display nonlinearity.
+\end{itemize}
+
+\section{The render() Function}
+
+The render function computes one frame into a flat buffer, called from the main loop.
+\begin{minted}{cpp}
+void render(vector<Uint32>& buf, const vec3& eye, double yaw) {
+    double half_w = tan(FOV_DEG * PI / 360.0);
+    double half_h = half_w * SCREEN_HEIGHT / SCREEN_WIDTH;   // aspect-corrected
+    vec3 forward(cos(yaw), sin(yaw), 0.0);   // flat along ground plane
+    vec3 right   = cross(forward, vec3(0, 0, 1));  // F x UP(z) = right-hand rule
+
+    for (int j = 0; j < SCREEN_HEIGHT; j++) {
+        double v = (1.0 - 2.0*(j + 0.5)/SCREEN_HEIGHT) * half_h;
+        for (int i = 0; i < SCREEN_WIDTH; i++) {
+            double u = (2.0*(i + 0.5)/SCREEN_WIDTH - 1.0) * half_w;
+            ray r(eye, unit_vector(forward + u*right + v*vec3(0, 0, 1)));
+            hit_record h = cast_ray(r);
+            vec3 c = shade(h, eye);
+
+            Uint8 r8 = (Uint8)(c.x()*255.99), g8 = (Uint8)(c.y()*255.99),
+                  b8 = (Uint8)(c.z()*255.99);
+            buf[(size_t)j*SCREEN_WIDTH + i] = (255u<<24) | (r8<<16) | (g8<<8) | b8;
+        }
+    }
+}
+\end{minted}
+Key implementation details:
+\begin{enumerate}
+    \item \textbf{Camera basis computed once per frame:} $\mathbf{forward}$ and $\mathbf{right}$ depend only on yaw; moving them outside the double loop saves $\mathcal{O}(W\!H)$ trigonometric calls.
+    \item \textbf{View plane at distance 1:} $u$ spans $[-\text{half\_w}, \text{half\_w}]$; $v$ spans $[-\text{half\_h}, \text{half\_h}]$ with $(i+0.5)$ centering. $\text{half\_w} = \tan(\text{FOV}/2)$; $\text{half\_h} = \text{half\_w} \times H / W$ (aspect correction).
+    \item \textbf{Direction not unit initially:} $\mathbf{forward} + u\mathbf{right} + v\mathbf{up}$ is not unit; \texttt{unit\_vector} normalizes it so ray steps are in world units.
+    \item \textbf{Flat buffer, linear indexing:} $\texttt{j*W + i}$ is cache-friendly; writes are sequential.
+    \item \textbf{ARGB32 packing:} $c.x()$ is red, $c.y()$ green, $c.z()$ blue; alpha = 255.
+\end{enumerate}
+
+\subsection{Pinhole Camera Geometry}
+
+For pixel $(i,j)$ the ray direction $\mathbf{D}$ is:
+\begin{equation}
+\mathbf{D} = \frac{
+    \mathbf{F} + u_{ij}\mathbf{R} + v_{ij}\mathbf{U}
+}{\| \mathbf{F} + u_{ij}\mathbf{R} + v_{ij}\mathbf{U} \|}
+\quad\text{with}\quad
+u_{ij} = (2\frac{i+0.5}{W}-1)\tan(\tfrac{\text{FOV}}{2}),\quad
+v_{ij} = (1-2\frac{j+0.5}{H})\tan(\tfrac{\text{FOV}}{2})\frac{H}{W}
+\end{equation}
+where $\mathbf{F = (\cos\psi, \sin\psi, 0)}$ (yaw only), $\mathbf{R = F \times U}$, $\mathbf{U = (0,0,1)}$. This is the standard pinhole camera from ray tracing literature.
+
+\section{Frame Loop and Image Display (SDL2)}
+
+The main loop (see Section \ref{sec:mainloop}) performs:
+\begin{enumerate}
+    \item \texttt{SDL_PollEvent} reads keyboard and quit events.
+    \item \texttt{update} turns the camera and moves the player, using \texttt{collides} to block walls.
+    \item \texttt{temperature(pos)} computes hot/cold score; title bar updated via \texttt{SDL_SetWindowTitle}; color bar drawn via \texttt{SDL_RenderFillRect}.
+    \item \texttt{render} computes frame buffer.
+    \item \texttt{SDL_UpdateTexture} uploads CPU buffer to GPU texture.
+    \item \texttt{SDL_RenderCopy} queues full-frame blit (texture $\to$ render target).
+    \item \texttt{SDL_RenderFillRect} draws hot/cold bar on top.
+    \item \texttt{SDL_RenderPresent} swaps the back buffer to the screen.
+    \item \texttt{SDL_Delay} caps frame time (target ~66 FPS).
+\end{enumerate}
+The rendering uses pure SDL2 — no BGI, no GPU shaders, no texture assets.
+
+\section{Summary: One Frame}
+
+\begin{enumerate}
+    \item \texttt{SDL_PollEvent} reads keyboard/close.
+    \item \texttt{update} computes $\Delta t$, turns yaw, moves pos (axis-separated, \texttt{collides}-checked).
+    \item \texttt{temperature} (BFS distance) updates title bar and overlay bar.
+    \item \texttt{render} $\to$ \texttt{SDL_UpdateTexture} $\to$ \texttt{SDL_RenderCopy} $\to$ \texttt{SDL_RenderPresent}.
+    \item Win check: if $(int)\text{floor}(pos.x) == exit\_x$ and $(int)\text{floor}(pos.y) == exit\_z$, set \texttt{won} and break.
+\end{enumerate}
+\end{parameter>

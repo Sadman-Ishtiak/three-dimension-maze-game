@@ -1,0 +1,42 @@
+\chapter{Implementation}
+
+\section{Program Structure}
+
+\begin{table}[H]
+\centering
+\caption{Structure of \texttt{main.cpp} (459 lines)}
+\label{tab:funcs}
+\small
+\begin{tabular}{@{}p{4.4cm}p{1.8cm}p{8.2cm}@{}}
+\toprule
+\textbf{Part} & \textbf{Lines} & \textbf{Purpose} \\
+\midrule
+Includes, \texttt{MAP}, constants & 1--41 & Maze data and tunable parameters \\
+\texttt{is\_wall}, \texttt{build\_exit\_dist} & 43--74 & Solid-cell test; BFS distance from the exit \\
+\texttt{vec3}, \texttt{ray}, \texttt{hit\_record} & 76--136 & Vector maths and intersection result \\
+\texttt{temperature}, \texttt{floor\_color\_at} & 138--162 & Score in $[-1,1]$; checkerboard and exit tile \\
+\texttt{cast\_ray}, \texttt{shade} & 164--239 & Intersection and lighting \\
+\texttt{collides} & 241--260 & Circle-versus-wall test \\
+\texttt{render} & 262--284 & One frame into the pixel buffer \\
+\texttt{update} & 286--316 & Input, movement, wall sliding \\
+\texttt{main} & 319--459 & SDL set-up, game loop, clean-up \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Code}
+
+\srccaption{Constants (lines 30--41)}
+\srcexcerpt{30}{41}
+
+\srccaption{Window, renderer and texture set-up (lines 320--369)}
+\srcexcerpt{320}{369}
+
+\srccaption{Finding \texttt{S} and \texttt{E}, spawning the player (lines 371--385)}
+\srcexcerpt{371}{385}
+
+\srccaption{Main loop (lines 387--448)}
+\srcexcerpt{387}{448}
+
+\srccaption{Shutdown (lines 450--459)}
+\srcexcerpt{450}{459}

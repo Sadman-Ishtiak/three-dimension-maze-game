@@ -1,0 +1,15 @@
+\chapter{Output and Results}
+
+\section{Visual Output}
+
+The program opens an SDL2 window of $640\times480$ pixels, rendering a first-person view of the maze at about 60 frames per second (frame time capped by \texttt{SDL_Delay(15)} loop guard). The rendering is pure CPU-based ray casting — one ray per pixel, no shaders, no GPU geometry processing.
+
+\begin{itemize}
+    \item \textbf{Perspective walls:} The 2D DDA traversal returns the nearest wall cell, so corridors occlude correctly. The far end of a long corridor appears smaller, matching perspective projection.
+    \item \textbf{Checkerboard floor:} Light gray ($\texttt{RGB} \approx (153, 148, 140)$) and dark gray ($\texttt{RGB} \approx (77, 77, 84)$) alternate by $(g_x+g_y) \bmod 2$, giving depth cues.
+    \item \textbf{Green exit tile:} The floor cell marked \texttt{E} returns $\texttt{vec3(0.20, 0.85, 0.30)}$ (bright green, $\approx 20\%$ red, $85\%$ green, $30\%$ blue). No glowing beacon, no pillar — just a green tile.
+    \item \textbf{Ceiling:} Dark gray-blue ($\texttt{vec3(0.22, 0.22, 0.26)}$) for rays aimed upward.
+    \item \textbf{Lambertian shading with headlamp:} The light source moves with the camera (eye position). Ambient $(0.14, 0.14, 0.18)$ prevents pure black. Diffuse component uses warm torch color $(1.7, 1.45, 1.10)$ scaled by $\max(\mathbf{N}\cdot\hat{\mathbf{L}, 0)$ and attenuation $1/(0.9 + 0.30 d^2)$.
+    \item \textbf{Hot/cold score overlay:} Title bar shows \texttt{Score +0.XX HOT/WARM/COOL/COLD}. A horizontal color bar (16px high, top-left) transitions from blue (cold, distance max) through cyan/white (warm) to red (hot, on exit).
+    \item \textbf{Gamma 2.0 correction:} Square root of each color channel before 8-bit quantization ($255.99$ scaling) ensures monitor linear response.
+\end{itemize}

@@ -1,0 +1,329 @@
+% Experiment Template
+% 1) Copy this file and rename it, e.g. experiments/experiment_04_firewall_rules.tex
+% 2) In main.tex, add:
+%    \includeexperiment{XX}{Experiment Title}{experiments/your_new_file_name}
+% 3) Keep this file content as sections only (no \experiment command here)
+
+\section{Theory}
+The Affine cipher is a monoalphabetic substitution cipher that combines modular multiplication and addition. Each letter in the plaintext is first multiplied by a multiplicative key and then shifted by an additive key. The mathematical formula for encryption is:
+$$E(x) = (x \cdot b + a) \mod m$$
+where $x$ is the 0-25 index of the letter, $b$ is the multiplicative key, $a$ is the additive key, and $m$ is the alphabet size (26). For decryption to be possible, the multiplicative key $b$ must be coprime to 26 ($gcd(b, 26) = 1$).
+
+The decryption process involves reversing the shift and then multiplying by the modular multiplicative inverse of $b$:
+$$D(x) = ((x - a) \cdot b^{-1}) \mod m$$
+
+\section{Algorithm}
+The Encryption algorithm steps are:
+\begin{enumerate}
+  \item Input Plaintext and keys $a$ (additive) and $b$ (multiplicative).
+  \item Initialize $i := 0$.
+  \item For each character $char[i]$ in the plaintext:
+  \begin{enumerate}
+    \item If $char[i]$ is a letter, compute $char[i] := (char[i] \cdot b + a) \mod 26$.
+    \item Increment $i$.
+  \end{enumerate}
+  \item Return the encrypted text.
+\end{enumerate}
+
+The Decryption algorithm steps are:
+\begin{enumerate}
+  \item Input Ciphertext and keys $a$ and $b$.
+  \item Compute $inv\_b$ as the modular multiplicative inverse of $b$ modulo 26.
+  \item Initialize $i := 0$.
+  \item For each character $char[i]$ in the ciphertext:
+  \begin{enumerate}
+    \item If $char[i]$ is a letter, compute $char[i] := ((char[i] - a + 26) \cdot inv\_b) \mod 26$.
+    \item Increment $i$.
+  \end{enumerate}
+  \item Return the decrypted text.
+\end{enumerate}
+
+% \section{Flowchart}
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, left=of start] {Input Plaintext, Keys a, b};
+    
+%     % Loop 1
+%     \node (init1) [process, below=of input] {$i := 0$};
+%     \node (check1) [decision, below=of init1] {$i < length$?};
+%     \node (char1) [decision, right=of check1, xshift=2cm] {Is Letter?};
+%     \node (mul) [process, right=of char1, xshift=2cm] {$char[i] := (char[i] \cdot b) \% 26$};
+%     \node (inc1) [process, below=of char1] {$i := i + 1$};
+    
+%     % Transition
+%     \node (init2) [process, below=of check1, yshift=-1cm] {$j := 0$};
+    
+%     % Loop 2
+%     \node (check2) [decision, below=of init2] {$j < length$?};
+%     \node (char2) [decision, right=of check2, xshift=2cm] {Is Letter?};
+%     \node (add) [process, right=of char2, xshift=2cm] {$char[j] := (char[j] + a) \% 26$};
+%     \node (inc2) [process, below=of char2] {$j := j + 1$};
+    
+%     \node (display) [io, below=of check2] {Display Encrypted Text};
+%     \node (end) [terminator, below=of display] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (init1);
+%     \draw [line] (init1) -- (check1);
+%     \draw [line] (check1.east) -- node[above]{Yes} (char1.west);
+%     \draw [line] (char1.east) -- node[above]{Yes} (mul.west);
+%     \draw [line] (char1.south) -- node[right]{No} (inc1);
+%     \draw [line] (mul) -- (inc1);
+%     \draw [line] (inc1) -- (check1);
+%     \draw [line] (check1) -- node[left]{No} (init2);
+    
+%     \draw [line] (init2) -- (check2);
+%     \draw [line] (check2.east) -- node[above]{Yes} (char2.west);
+%     \draw [line] (char2.east) -- node[above]{Yes} (add.west);
+%     \draw [line] (char2.south) -- node[right]{No} (inc2);
+%     \draw [line] (add) -- (inc2);
+%     \draw [line] (inc2) -- (check2);
+%     \draw [line] (check2) -- node[left]{No} (display);
+%     \draw [line] (display) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Affine Cipher Encryption (Two Loops)}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{autofitflowchart}
+%     \node (start) [terminator] {Start};
+%     \node (input) [io, left=of start] {Input Ciphertext, Keys a, b};
+    
+%     % Loop 1
+%     \node (init1) [process, below=of input] {$i := 0$};
+%     \node (check1) [decision, below=of init1] {$i < length$?};
+%     \node (char1) [decision, right=of check1, xshift=2cm] {Is Letter?};
+%     \node (sub) [process, right=of char1, xshift=2cm] {$char[i] := (char[i] - a) \% 26$};
+%     \node (inc1) [process, below=of char1] {$i := i + 1$};
+    
+%     % Transition
+%     \node (init2) [process, below=of check1, yshift=-1cm] {$inv := inv(b), j := 0$};
+    
+%     % Loop 2
+%     \node (check2) [decision, below=of init2] {$j < length$?};
+%     \node (char2) [decision, right=of check2, xshift=2cm] {Is Letter?};
+%     \node (mul) [process, right=of char2, xshift=2cm] {$char[j] := (char[j] \cdot inv) \% 26$};
+%     \node (inc2) [process, below=of char2] {$j := j + 1$};
+    
+%     \node (display) [io, below=of check2] {Display Decrypted Text};
+%     \node (end) [terminator, below=of display] {End};
+
+%     \draw [line] (start) -- (input);
+%     \draw [line] (input) -- (init1);
+%     \draw [line] (init1) -- (check1);
+%     \draw [line] (check1.east) -- node[above]{Yes} (char1.west);
+%     \draw [line] (char1.east) -- node[above]{Yes} (sub.west);
+%     \draw [line] (char1.south) -- node[right]{No} (inc1);
+%     \draw [line] (sub) -- (inc1);
+%     \draw [line] (inc1) -- (check1);
+%     \draw [line] (check1) -- node[left]{No} (init2);
+    
+%     \draw [line] (init2) -- (check2);
+%     \draw [line] (check2.east) -- node[above]{Yes} (char2.west);
+%     \draw [line] (char2.east) -- node[above]{Yes} (mul.west);
+%     \draw [line] (char2.south) -- node[right]{No} (inc2);
+%     \draw [line] (mul) -- (inc2);
+%     \draw [line] (inc2) -- (check2);
+%     \draw [line] (check2) -- node[left]{No} (display);
+%     \draw [line] (display) -- (end);
+%   \end{autofitflowchart}
+%   \caption{Flowchart for Affine Cipher Decryption (Two Loops)}
+% \end{figure}
+
+\section{Code}
+\begin{minted}{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+
+int extended_euclidian(int a, int b, int &x, int &y) {
+  if (b == 0) {
+    x = 1;
+    y = 0;
+    return a;
+  }
+  int x1, y1;
+  int d = extended_euclidian(b, a % b, x1, y1);
+  x = y1;
+  y = x1 - y1 * (a / b);
+  return d;
+}
+
+int inv(int a, int m = 26) {
+  int x, y;
+  int g = extended_euclidian(a, m, x, y);
+  if (g != 1) {
+    cout << "No solution!";
+    return -1;
+  }
+  else {
+    x = (x % m + m) % m;
+    // cout << x << endl;
+    return x;
+  }
+}
+
+class multiplicative {
+  private:
+    int key;
+  public:
+    multiplicative(int k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+
+multiplicative::multiplicative(int k) {
+  int tempk = k;
+  while (__gcd(26, tempk) != 1) {
+    cout << "Key is not coprime to 26. Enter a new key: ";
+    cin >> tempk;
+    cin.ignore();
+  }
+  key = tempk;
+}
+
+string multiplicative::encrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (((s[i] - 'a') * key) % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (((s[i] - 'A') * key) % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+string multiplicative::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  int inverse_key = inv(key);
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (((s[i] - 'a') * inverse_key) % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (((s[i] - 'A') * inverse_key) % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+class additive {
+  private:
+    int key;
+  public:
+    additive(int k);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+
+additive::additive(int k) {
+  key = k;
+}
+
+string additive::encrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (s[i] - 'a' + key % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (s[i] - 'A' + key % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+string additive::decrypt(string s) {
+  string ans = s;
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (s[i] >= 'a' && s[i] <= 'z') {
+      ans[i] = (s[i] - 'a' - key % 26 + 26) % 26 + 'a';
+    } else if (s[i] >= 'A' && s[i] <= 'Z') {
+      ans[i] = (s[i] - 'A' - key % 26 + 26) % 26 + 'A';
+    } else {
+      ans[i] = s[i];
+    }
+  }
+  return ans;
+}
+
+class affine{
+  private:
+    additive add;
+    multiplicative mul;
+  public:
+    affine(int a, int b);
+    string encrypt(string s);
+    string decrypt(string s);
+};
+
+affine::affine(int a, int b) : add(a), mul(b) {
+}
+
+string affine::encrypt(string s) {
+  return add.encrypt(mul.encrypt(s));
+}
+
+string affine::decrypt(string s) {
+  return mul.decrypt(add.decrypt(s));
+}
+
+
+int main() {
+  cout << "Enter two key: ";
+  int a, b;
+  cin >> a >> b;
+  cin.ignore();
+  cout << "Key is: " << a << " " << b << endl;
+  affine cipher(a, b);
+  cout << "Enter Plaintext : ";
+  string text;
+  getline(cin, text);
+  string encrypted = cipher.encrypt(text);
+  cout << "Encrypted text: " << encrypted << endl;
+  string decrypted = cipher.decrypt(encrypted);
+  cout << "Decrypted text: " << decrypted << endl;
+  return 0;
+}
+\end{minted}
+
+\section{Result and Discussion - I/O}
+The program is designed to take two keys as input, where the first key is the additive key and the second one is the multiplicative key. Since the program uses the previously implemented additive and multiplicative cipher classes, the user gets asked to enter the multiplicative key if it is not coprime to 26.
+\begin{minted}{text}
+Enter two key: 10
+2
+Key is: 10 2
+Key is not coprime to 26. Enter a new key: 3
+Enter Plaintext : This is a sample text for affine cipher.
+Encrypted text: Pfim im k mkudrw pwbp zaj kzzixw qidfwj.
+Decrypted text: This is a sample text for affine cipher.
+\end{minted}
+If the keys are valid, the program will encrypt and decrypt the plaintext correctly.
+\begin{minted}{text}
+Enter two key: 2 5
+Key is: 2 5
+Enter Plaintext : Sadman Ishtiak
+Encrypted text: Ocrkcp Qoltqca
+Decrypted text: Sadman Ishtiak
+\end{minted}
+Another example with different keys:
+\begin{minted}{text}
+Enter two key: 20 25  
+Key is: 20 25
+Enter Plaintext : The quick brown fox jumps over the lazy dog.
+Encrypted text: Bnq eamsk tdgyh pgx laifc gzqd bnq juvw rgo.
+Decrypted text: The quick brown fox jumps over the lazy dog.
+\end{minted}
+
+\section{Conclusion}
+The Affine cipher combines additive and multiplicative ciphers into a simple encryption method. It is not secure against frequency analysis or brute-force attacks, but serves as a good educational tool for understanding modular arithmetic in cryptography.
